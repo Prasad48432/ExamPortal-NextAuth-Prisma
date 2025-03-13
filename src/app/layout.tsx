@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Montserrat, Bricolage_Grotesque } from "next/font/google";
 import "@/app/globals.css";
 import { ReactNode } from "react";
-import { ThemeProvider } from "@/lib/ThemeProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
+  subsets: ["latin"],
+});
+
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
@@ -19,13 +24,47 @@ type LayoutProps = {
 };
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <html lang="en">
-      <body className={`${montserrat.variable} antialiased montserrat`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          .theme-init {
+            transition: none !important;
+            opacity: 0 !important;
+          }
+          html:not(.theme-init) {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+          }
+        `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          document.documentElement.classList.add('theme-init');
+          try {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+            setTimeout(function() {
+              document.documentElement.classList.remove('theme-init');
+            }, 10);
+          } catch (e) {}
+        `,
+          }}
+        />
+      </head>
+      <body className={`${montserrat.variable} ${bricolage.variable} antialiased montserrat`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="theme"
         >
           {children}
         </ThemeProvider>

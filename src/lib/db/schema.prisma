@@ -1,56 +1,97 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String?         @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id            String       @id @default(cuid())
+    name          String?
+    emailVerified DateTime?
+    email         String?      @unique
+    image         String?
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+    accounts      Account[]
+    exams         ExamResult[]
+    sessions      Session[]
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+    id                String   @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+    @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Exam {
+    id             String       @id @default(uuid())
+    title          String
+    description    String
+    duration       Int
+    totalQuestions Int
+    passingScore   Int
+    createdAt      DateTime     @default(now())
+    results        ExamResult[]
+    questions      Question[]
+}
+
+model ExamResult {
+    id          String    @id @default(uuid())
+    userId      String
+    examId      String
+    score       Float
+    answers     Json
+    questions   Json
+    status      String
+    completedAt DateTime?
+    createdAt   DateTime  @default(now())
+    exam        Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+    id            String   @id @default(uuid())
+    examId        String
+    questionText  String
+    options       String[]
+    correctAnswer Int
+    explanation   String?
+    reference     String?
+    createdAt     DateTime @default(now())
+    exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}

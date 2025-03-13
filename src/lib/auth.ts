@@ -4,72 +4,89 @@ import { encode as defaultEncode } from "next-auth/jwt";
 import db from "@/lib/db/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { schema } from "@/lib/schema";
+import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 
 const adapter = PrismaAdapter(db);
 
+function decodeIdToken(id_token: string) {
+  if (!id_token) return null;
+
+  const base64Url = id_token.split(".")[1]; // Get payload
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const payload = JSON.parse(Buffer.from(base64, "base64").toString());
+
+  return {
+    name: payload.name || null,
+    image: payload.picture || null,
+    email: payload.email || null,
+  };
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter,
+  secret: process.env.AUTH_SECRET,
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    }),
-    Credentials({
-      credentials: {
-        email: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        const validatedCredentials = schema.parse(credentials);
-
-        const user = await db.user.findFirst({
-          where: {
-            email: validatedCredentials.email,
-            password: validatedCredentials.password,
-          },
-        });
-
-        if (!user) {
-          throw new Error("Invalid credentials.");
-        }
-
-        return user;
-      },
+    Google,
+    Resend({
+      from: "onboarding@linkfolio.space",
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account?.provider === "credentials") {
-        token.credentials = true;
-      }
-      return token;
-    },
-  },
-  jwt: {
-    encode: async function (params) {
-      if (params.token?.credentials) {
-        const sessionToken = uuid();
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const googleData = decodeIdToken(account?.id_token || "");
 
-        if (!params.token.sub) {
-          throw new Error("No user ID found in token");
-        }
-
-        const createdSession = await adapter?.createSession?.({
-          sessionToken: sessionToken,
-          userId: params.token.sub,
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        const existingUser = await db.user.findUnique({
+          where: { email: user.email ?? undefined },
         });
 
-        if (!createdSession) {
-          throw new Error("Failed to create session");
-        }
+        if (existingUser) {
+          const existingGoogleAccount = await db.account.findFirst({
+            where: {
+              userId: existingUser.id,
+              provider: "google",
+            },
+          });
 
-        return sessionToken;
+          if (!existingGoogleAccount) {
+            await db.account.create({
+              data: {
+                userId: existingUser.id,
+                provider: "google",
+                providerAccountId: account.providerAccountId,
+                type: "oidc",
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type
+                  ? String(account.token_type)
+                  : null,
+                id_token: account.id_token,
+                scope: account.scope,
+                session_state: account.session_state
+                  ? String(account.session_state)
+                  : null,
+              },
+            });
+          }
+
+          if (!existingUser.name || !existingUser.image) {
+            await db.user.update({
+              where: { id: existingUser.id },
+              data: {
+                name: googleData?.name || existingUser.name,
+                image: googleData?.image || existingUser.image,
+              },
+            });
+          }
+        }
       }
-      return defaultEncode(params);
+
+      return true;
     },
+  },
+  pages: {
+    verifyRequest: "/linksent", // Change this to your desired page
   },
 });
