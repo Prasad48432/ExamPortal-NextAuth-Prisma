@@ -12,8 +12,8 @@ const Page = async () => {
   if (session) redirect("/");
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className=" p-8 rounded-lg w-full max-w-md">
+    <div className="flex h-screen">
+      <div className="h-full p-8 rounded-lg lg:w-1/2 w-full flex items-center justify-center">
         <div className="w-full max-w-sm mx-auto space-y-6">
           <h1 className="text-2xl font-bold text-center mb-6">Sign In</h1>
           <GoogleSignIn />
@@ -44,9 +44,23 @@ const Page = async () => {
               type="email"
               required
             />
-            <SubmitButton loadingText="Sending link..." className="w-full">Sign in with email</SubmitButton>
+            <SubmitButton loadingText="Sending link..." className="w-full">
+              Sign in with email
+            </SubmitButton>
           </form>
+          <p className="text-muted-foreground text-center text-sm">
+            By signing up, you agree to our{" "}
+            <a target="_blank" className="underline" href="/tos">
+              Terms of Service
+            </a>
+            .
+          </p>
         </div>
+      </div>
+      <div className="w-1/2 hidden bg-primary text-white h-screen lg:flex flex-col items-center justify-center">
+        <h1 className="text-7xl font-bold">
+          Some <br /> Content <br /> Here
+        </h1>
       </div>
     </div>
   );

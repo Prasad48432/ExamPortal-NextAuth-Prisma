@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const Navbar = ({ session }: { session: any }) => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -12,6 +13,18 @@ const Navbar = ({ session }: { session: any }) => {
   const handleSignOut = async () => {
     await signOut();
   };
+
+  const pathname = usePathname();
+  
+  // List of routes where you don't want the navbar
+  const hideNavbarRoutes = ['/sign-in'];
+  const shouldShowNavbar = !hideNavbarRoutes.includes(pathname);
+
+  if (!shouldShowNavbar) {
+    return null;
+  }
+
+
   return (
     <div
       id="topdiv"

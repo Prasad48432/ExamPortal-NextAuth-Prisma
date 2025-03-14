@@ -3,6 +3,8 @@ import { Montserrat, Bricolage_Grotesque } from "next/font/google";
 import "@/app/globals.css";
 import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { auth } from "@/lib/auth";
+import Navbar from "@/components/navbar";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -22,7 +24,8 @@ const metadata: Metadata = {
 type LayoutProps = {
   children: ReactNode;
 };
-const Layout = ({ children }: LayoutProps) => {
+const Layout = async ({ children }: LayoutProps) => {
+  const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,7 +61,9 @@ const Layout = ({ children }: LayoutProps) => {
           }}
         />
       </head>
-      <body className={`${montserrat.variable} ${bricolage.variable} antialiased montserrat`}>
+      <body
+        className={`${montserrat.variable} ${bricolage.variable} antialiased montserrat`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -66,6 +71,7 @@ const Layout = ({ children }: LayoutProps) => {
           disableTransitionOnChange
           storageKey="theme"
         >
+          <Navbar session={session} />
           {children}
         </ThemeProvider>
       </body>

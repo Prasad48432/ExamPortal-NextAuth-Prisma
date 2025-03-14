@@ -2,6 +2,9 @@ import React from "react";
 import db from "@/lib/db/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Clock, FileText, TrendingUp, Users } from "lucide-react";
 
 export default async function Exams() {
   const session = await auth();
@@ -9,13 +12,85 @@ export default async function Exams() {
 
   const exams = await db.exam.findMany();
   return (
-    <div>
-      <h1>Exams</h1>
-      <ul>
-        {exams.map((exam) => (
-          <li key={exam.id}>{exam.title}</li>
-        ))}
-      </ul>
+    <div className="min-h-screen bg-lightprimary-bg dark:bg-primary-bg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-lightprimary-bg dark:bg-primary-bg">
+        <div className="flex flex-col lg:flex-row lg:space-x-12">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-8 text-lightprimary-text dark:text-primary-text">
+              <TrendingUp className="w-5 h-5" />
+              <span className="font-semibold">Trending on Exam portal</span>
+            </div>
+            <ul className="space-y-3">
+              {exams.map((exam) => (
+                <li key={exam.id}>
+                  <Card className="px-4 py-4 sm:px-6 border bg-card text-card-foreground">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium truncate text-primary">
+                          {exam.title}
+                        </h3>
+                        <p className="mt-1 text-sm text-card-foreground">
+                          {exam.description}
+                        </p>
+                      </div>
+                      <div className="ml-4">
+                        <Button className="inline-flex items-center">
+                          Start Exam
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-2 sm:flex sm:justify-between">
+                      <div className="sm:flex sm:space-x-4">
+                        <p className="flex items-center text-sm text-card-foreground">
+                          <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
+                          {exam.duration} minutes
+                        </p>
+                        <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
+                          <FileText className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
+                          {exam.totalQuestions} questions
+                        </p>
+                        <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
+                          <Users className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
+                          Passing score: {exam.passingScore}%
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="w-full lg:w-80">
+            <div className="relative lg:sticky top-10 lg:top-20 flex flex-col items-start justify-center">
+              <h3 className="font-semibold mb-4 text-lg text-lightprimary-text dark:text-primary-text">
+                Discover more topics
+              </h3>
+              <div className="flex flex-wrap gap-2 mb-8">
+                {[
+                  "Programming",
+                  "Data Science",
+                  "Technology",
+                  "Self Improvement",
+                  "Writing",
+                  "Relationships",
+                  "Machine Learning",
+                  "Productivity",
+                ].map((topic, index) => (
+                  <button
+                    key={index}
+                    className="px-4 py-2 rounded-full text-lightprimary-text dark:text-primary-text border border-lightsecondary-border dark:border-secondary-border text-sm bg-lightsecondary-bg dark:bg-secondary-bg"
+                  >
+                    {topic}
+                  </button>
+                ))}
+              </div>
+              <h3 className="font-semibold mb-4 text-lg flex items-center justify-center gap-2 text-lightprimary-text dark:text-primary-text">
+                Discover trending profiles <TrendingUp className="w-5 h-5" />
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
