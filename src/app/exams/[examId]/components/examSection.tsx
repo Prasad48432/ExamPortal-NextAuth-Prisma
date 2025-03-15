@@ -1,6 +1,7 @@
 "use client";
 import { Exam, ExamResult, Question } from "@prisma/client";
 import {
+  ChevronRight,
   CircleCheck,
   Clock,
   Fullscreen,
@@ -192,11 +193,11 @@ const ExamSection = ({
             <div className="flex items-center px-6 lg:px-0 flex-1 sm:items-stretch justify-between">
               <div className="flex items-center divide-x gap-2">
                 <div className="flex items-center justify-start">
-                  <p className="font-bold">Exam Portal</p>
+                  <p className="font-bold leading-tight">Exam <br/> Portal</p>
                 </div>
                 <div className="flex flex-col items-start justify-center pl-2">
-                  <p className="font-semibold text-sm">Prasad Reddy</p>
-                  <p className="font-medium text-xs flex items-center justify-center">
+                  <p className="font-semibold text-sm text-foreground/90">Prasad Reddy</p>
+                  <p className="font-medium text-xs flex items-center justify-center text-foreground/80">
                     Web Dev Exam /{" "}
                     <CircleCheck
                       className="ml-1 mr-1"
@@ -208,7 +209,7 @@ const ExamSection = ({
                 </div>
               </div>
               <div className="flex gap-10 items-center justify-end">
-                <div className="flex items-center text-sm font-medium">
+                <div className="flex items-center text-sm font-medium text-foreground/80">
                   <Clock className="h-4 w-4 mr-1" />
                   Time left:{" "}
                   {timeLeft !== null ? formatTime(timeLeft) : "Loading..."}
@@ -232,7 +233,7 @@ const ExamSection = ({
           {/* Exam Section */}
           <div className="flex-1 min-h-[calc(100vh-210px)]">
             <div className="space-y-8">
-              <div className="flex flex-col lg:flex-row items-center justify-center mb-6 gap-2">
+              <div className="flex flex-col lg:flex-row items-center justify-center mb-12 gap-2">
                 <div className="w-full flex flex-col">
                   <h4 className="text-lg font-medium mb-4 select-none">
                     {currentQuestion.questionText}
@@ -263,31 +264,31 @@ const ExamSection = ({
               </div>
 
               <div className="flex justify-between select-none">
-                <button
+                <Button
                   onClick={handlePrevious}
                   disabled={currentQuestionIndex === 0}
-                  className={`select-none inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md ${
+                  className={`select-none inline-flex h-8 items-center px-4 py-2 border text-xs font-medium rounded-md ${
                     currentQuestionIndex === 0
                       ? "bg-muted/40 text-foreground/50 cursor-not-allowed"
                       : "bg-muted/90 text-foreground hover:bg-muted"
                   } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary`}
                 >
                   Previous
-                </button>
+                </Button>
                 {currentQuestionIndex < questions.length - 1 ? (
-                  <button
+                  <Button
                     onClick={handleNext}
-                    className="select-none inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
+                    className="select-none inline-flex h-8 items-center px-4 py-2 border border-transparent text-xs font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
                   >
-                    Next
-                  </button>
+                    Next <ChevronRight size={15} />
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => {}}
-                    className="select-none inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
+                    className="select-none inline-flex h-8 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
                   >
-                    Submit Exam
-                  </button>
+                    Finish Test
+                  </Button>
                 )}
               </div>
             </div>
@@ -298,7 +299,7 @@ const ExamSection = ({
             <div className="relative lg:sticky top-10 lg:top-20 flex flex-col items-start justify-center">
               <div className="px-4 py-5 sm:p-6">
                 <h4 className="text-sm font-medium mb-4">Question Navigator</h4>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {questions.map((_, index) => (
                     <button
                       key={index}
@@ -314,6 +315,7 @@ const ExamSection = ({
                       {index + 1}
                     </button>
                   ))}
+                  
                 </div>
                 <div className="mt-4 flex gap-3 justify-start text-sm text-foreground/70">
                   <div className="flex items-center text-sm">
@@ -355,7 +357,7 @@ const ExamSection = ({
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 relativ">
-              <p className="text-xs">Need help? Contact us</p>
+              <p className="text-xs">Need help? Contact us:</p>
               <p className="text-xs flex items-center justify-center gap-1">
                 {" "}
                 <Image
