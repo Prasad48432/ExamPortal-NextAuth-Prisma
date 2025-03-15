@@ -3,7 +3,6 @@ import { auth, signIn } from "@/lib/auth";
 import { GoogleSignIn } from "@/components/GoogleSignIn";
 import { redirect } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { executeAction } from "@/lib/executeAction";
 import { SubmitButton } from "@/components/SubmitButton";
 

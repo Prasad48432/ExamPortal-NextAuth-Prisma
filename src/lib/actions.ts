@@ -30,4 +30,5 @@ const sendMagicLink = async (formData: any) => {
   });
 };
 
+
 export { signUp, googleSignup, sendMagicLink };

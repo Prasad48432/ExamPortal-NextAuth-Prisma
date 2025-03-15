@@ -18,7 +18,7 @@ const Navbar = ({ session }: { session: any }) => {
   
   // List of routes where you don't want the navbar
   const hideNavbarRoutes = ['/sign-in'];
-  const shouldShowNavbar = !hideNavbarRoutes.includes(pathname);
+  const shouldShowNavbar = !hideNavbarRoutes.includes(pathname) && !pathname.startsWith("/exams/");;
 
   if (!shouldShowNavbar) {
     return null;
@@ -28,7 +28,7 @@ const Navbar = ({ session }: { session: any }) => {
   return (
     <div
       id="topdiv"
-      className="sticky top-0 transform z-40 bg-lightprimary-bg dark:bg-primary-bg/90"
+      className="sticky top-0 transform z-40"
     >
       <div className="absolute inset-0 h-full w-full bg-lightprimary-bg/70 dark:bg-primary-bg/90 !opacity-100 transition-opacity"></div>
       <nav className="relative z-40 border-b border-brdr backdrop-blur-sm transition-opacity bg-lightprimary-bg dark:bg-primary-bg  border-lightsecondary-border dark:border-secondary-border dark:shadow-lg dark:shadow-primary-bg/80">

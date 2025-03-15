@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { auth } from "@/lib/auth";
 import Navbar from "@/components/navbar";
+import { Toaster } from "sonner";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -71,6 +72,7 @@ const Layout = async ({ children }: LayoutProps) => {
           disableTransitionOnChange
           storageKey="theme"
         >
+          <Toaster richColors position="top-center" />
           <Navbar session={session} />
           {children}
         </ThemeProvider>

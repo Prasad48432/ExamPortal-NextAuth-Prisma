@@ -66,9 +66,9 @@ model ExamResult {
     id          String    @id @default(uuid())
     userId      String
     examId      String
-    score       Float
-    answers     Json
-    questions   Json
+    score       Float?
+    answers     Json?
+    questions   Json?
     status      String
     completedAt DateTime?
     createdAt   DateTime  @default(now())

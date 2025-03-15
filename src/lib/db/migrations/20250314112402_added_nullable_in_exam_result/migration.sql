@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ExamResult" ALTER COLUMN "score" DROP NOT NULL,
+ALTER COLUMN "answers" DROP NOT NULL,
+ALTER COLUMN "questions" DROP NOT NULL;
