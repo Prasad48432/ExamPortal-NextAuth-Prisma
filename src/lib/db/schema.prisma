@@ -66,7 +66,7 @@ model ExamResult {
     id          String    @id @default(uuid())
     userId      String
     examId      String
-    score       Float?
+    score       Float
     answers     Json?
     questions   Json?
     status      String
@@ -84,6 +84,7 @@ model Question {
     correctAnswer Int
     explanation   String?
     reference     String?
+    questionImage String?
     createdAt     DateTime @default(now())
     exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
 }

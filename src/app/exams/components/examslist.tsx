@@ -21,6 +21,7 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { enterFullScreen } = useFullScreen();
+  const [loading, setLoading] = useState(false);
 
   const openModal = (exam: Exam) => {
     setSelectedExam(exam);
@@ -39,13 +40,17 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
     userId: string;
     examId: string;
   }) => {
+    setLoading(true);
     const response = await startExam(userId, examId);
 
     if (response.success) {
+      setLoading(false);
+      closeModal();
       await enterFullScreen();
       redirect(`/exams/${examId}?attemptId=${response.examResult?.id}`);
     } else {
       ToastError({ message: response.message || "error" });
+      setLoading(false);
     }
   };
 
@@ -72,7 +77,7 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
                   <div className="ml-4">
                     <Button
                       onClick={() => openModal(exam)}
-                      className="inline-flex items-center"
+                      className="inline-flex items-center h-8 px-3"
                     >
                       Start Exam
                     </Button>
@@ -101,7 +106,7 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
       </div>
       {selectedExam && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogOverlay className="bg-gray-400/30" />
+          <DialogOverlay className="bg-muted/40" />
           <DialogContent className="gap-1">
             <DialogHeader>
               <DialogTitle>{selectedExam.title}</DialogTitle>
@@ -137,15 +142,45 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="secondary" onClick={closeModal}>
+              <Button className="h-8 px-3" variant="secondary" onClick={closeModal}>
                 Cancel
               </Button>
               <Button
+                className="h-8 px-3"
+                disabled={loading}
                 onClick={() =>
                   handleStartExam({ userId: userId, examId: selectedExam.id })
                 }
               >
-                Start
+                {loading ? (
+                  <>
+                    <span>
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    </span>
+                    Starting...
+                  </>
+                ) : (
+                  "Start"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -4,36 +4,83 @@ import {
   ChevronRight,
   CircleCheck,
   Clock,
-  Fullscreen,
   Minimize,
   Settings,
-  Wifi,
   WifiHigh,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import NetworkSpeed from "./wifispeed";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { useFullScreen } from "@/hooks/useFullScreen";
+import { submitExamResult } from "@/lib/actions/examActions";
+import { useRouter } from "next/navigation";
+import useCountdown from "@/hooks/useCountdown";
 
 const ExamSection = ({
   lockQuestions,
   examDetails,
   attempt,
+  userEmail,
 }: {
   lockQuestions: Question[];
   examDetails: Exam;
   attempt: ExamResult;
+  userEmail: string;
 }) => {
   const [questions, setQuestions] = useState<Question[]>(lockQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const submittedRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { exitFullScreen, isFullScreen } = useFullScreen();
+  const router = useRouter();
+
+  const { secondsLeft, start } = useCountdown();
+
+  const handleSubmit = async () => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+
+    setSubmitting(true);
+
+    try {
+      const answeredQuestions = Object.keys(answers).length;
+      const correctAnswers = questions.filter(
+        (q) => answers[q.id] === q.correctAnswer
+      ).length;
+
+      const score = Math.round((correctAnswers / questions.length) * 100);
+      const formattedAnswers = questions.map((question) => ({
+        question_id: question.id,
+        selected_option: answers[question.id] ?? -1,
+        is_correct: answers[question.id] === question.correctAnswer,
+      }));
+
+      const result = await submitExamResult(
+        attempt.id,
+        score,
+        formattedAnswers
+      );
+      if (!result.success) throw new Error("error submitting");
+
+      if (isFullScreen) {
+        await exitFullScreen();
+      }
+
+      router.push("/exams");
+    } catch (err) {
+      console.error("Error submitting exam:", err);
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const startTime = new Date(attempt.createdAt).getTime();
     const totalDuration = examDetails.duration * 60 * 1000; // Convert to ms
     const endTime = startTime + totalDuration;
-    setTimeLeft(Math.max((endTime - Date.now()) / 1000, 0));
+    start(Math.max((endTime - Date.now()) / 1000, 0));
   }, []);
 
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {
@@ -193,18 +240,22 @@ const ExamSection = ({
             <div className="flex items-center px-6 lg:px-0 flex-1 sm:items-stretch justify-between">
               <div className="flex items-center divide-x gap-2">
                 <div className="flex items-center justify-start">
-                  <p className="font-bold leading-tight">Exam <br/> Portal</p>
+                  <p className="font-bold leading-tight">
+                    Exam <br /> Portal
+                  </p>
                 </div>
                 <div className="flex flex-col items-start justify-center pl-2">
-                  <p className="font-semibold text-sm text-foreground/90">Prasad Reddy</p>
+                  <p className="font-semibold text-sm text-foreground/90">
+                    {userEmail}
+                  </p>
                   <p className="font-medium text-xs flex items-center justify-center text-foreground/80">
                     Web Dev Exam /{" "}
                     <CircleCheck
                       className="ml-1 mr-1"
-                      color="green"
+                      color="#16a34a"
                       size={15}
                     />{" "}
-                    Saved: 30 seconds ago
+                    <span className="text-green-600">Saved: 30 seconds ago</span>
                   </p>
                 </div>
               </div>
@@ -212,7 +263,9 @@ const ExamSection = ({
                 <div className="flex items-center text-sm font-medium text-foreground/80">
                   <Clock className="h-4 w-4 mr-1" />
                   Time left:{" "}
-                  {timeLeft !== null ? formatTime(timeLeft) : "Loading..."}
+                  {secondsLeft !== null
+                    ? formatTime(secondsLeft)
+                    : "Loading..."}
                 </div>
                 <div className="flex gap-2 items-center text-sm font-medium">
                   <Minimize className="h-4 w-4 mr-1 cursor-pointer" />
@@ -221,7 +274,14 @@ const ExamSection = ({
                     strokeWidth={1.5}
                   />
                 </div>
-                <Button className="h-8">Finish Test</Button>
+                <Button
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                  className="h-8"
+                >
+                  Finish Test
+                </Button>
               </div>
             </div>
           </div>
@@ -238,6 +298,9 @@ const ExamSection = ({
                   <h4 className="text-lg font-medium mb-4 select-none">
                     {currentQuestion.questionText}
                   </h4>
+                  {currentQuestion.questionImage && (
+                    <img className="my-4 w-48 object-cover" src={currentQuestion.questionImage} />
+                  )}
                   <div className="space-y-3 select-none">
                     {currentQuestion.options.map((option, index) => (
                       <div key={index} className="flex items-center">
@@ -284,7 +347,9 @@ const ExamSection = ({
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => {}}
+                    onClick={() => {
+                      handleSubmit();
+                    }}
                     className="select-none inline-flex h-8 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
                   >
                     Finish Test
@@ -315,7 +380,6 @@ const ExamSection = ({
                       {index + 1}
                     </button>
                   ))}
-                  
                 </div>
                 <div className="mt-4 flex gap-3 justify-start text-sm text-foreground/70">
                   <div className="flex items-center text-sm">

@@ -12,8 +12,8 @@ export default async function Exams() {
   const exams = await db.exam.findMany();
 
   return (
-    <div className="min-h-screen bg-lightprimary-bg dark:bg-primary-bg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-lightprimary-bg dark:bg-primary-bg">
+    <div className="min-h-screen ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row lg:space-x-12">
           <ExamsList exams={exams} userId={session.user?.id || ""} />
           <div className="w-full lg:w-80">

@@ -6,6 +6,9 @@ import {
 import ExamSection from "./components/examSection";
 import { Exam, ExamResult, Question } from "@prisma/client";
 import db from "@/lib/db/db";
+import { isJsonValueEmpty } from "./utils/isJsonEmpty";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
@@ -14,11 +17,11 @@ export default async function Page({
   params: { examId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-
-  const { examId } = await params
+  const session = await auth();
+  if (!session) redirect("/sign-in");
+  const { examId } = await params;
   const resolvedSearchParams = await searchParams;
   const attemptId = resolvedSearchParams?.attemptId as string | undefined;
-
 
   if (!attemptId) {
     return <div>Invalid Attempt</div>;
@@ -26,35 +29,35 @@ export default async function Page({
 
   const exam = await getExamDetails(examId);
 
-  if(!exam || !exam.data){
+  if (!exam || !exam.data) {
     return <div>Invalid Exam</div>;
   }
 
   const attempt = await getAttemptDetails(attemptId);
 
-  if(!attempt || !attempt.data){
+  if (!attempt || !attempt.data) {
     return <div>Attempt not found</div>;
   }
 
+  let questions: Question[] = [];
   const storedQuestions = attempt.data.questions;
 
-  let questions: Question[] = [];
-  
-  // Ensure storedQuestions is a valid JSON array
-  if (!storedQuestions || typeof storedQuestions !== "string" || storedQuestions.length === 0) {
-    const getQuestions = await getRandomQuestions(examId, exam.data.totalQuestions);
+  if (isJsonValueEmpty(storedQuestions)) {
+    const getQuestions = await getRandomQuestions(
+      examId,
+      exam.data.totalQuestions
+    );
     questions = getQuestions.data as Question[];
-  
+
     await db.examResult.update({
       where: { id: attempt.data.id },
       data: {
-        questions: JSON.stringify(questions), // Store as JSON string
+        questions: questions,
       },
     });
   } else {
-    questions = JSON.parse(storedQuestions) as Question[]; // Convert back to array
+    questions = storedQuestions as unknown as Question[];
   }
-
 
   return (
     <div>
@@ -62,6 +65,7 @@ export default async function Page({
         lockQuestions={questions}
         examDetails={exam.data as Exam}
         attempt={attempt.data as ExamResult}
+        userEmail={session.user?.email || ""}
       />
     </div>
   );

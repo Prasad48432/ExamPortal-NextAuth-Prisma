@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/db/db";
+import type { JsonValue } from "@prisma/client/runtime/library";
 
 export async function getRandomQuestions(examId: string, count: number) {
   try {
@@ -47,5 +48,23 @@ export async function getAttemptDetails(attemptId: string){
     return { success: true, data: attempt };
   } catch (error) {
     return { success: false, message: "Error fetching attempt details", error };
+  }
+}
+
+export async function submitExamResult(attemptId: string, score: number, formattedAnswers: JsonValue){
+  try {
+    await db.examResult.update({
+      where: { id: attemptId },
+      data: {
+        score: score,
+        answers: formattedAnswers as any,
+        completedAt: new Date().toISOString(),
+        status: "completed",
+      },
+    });
+
+    return { success: true};
+  } catch (error) {
+    return { success: false };
   }
 }
