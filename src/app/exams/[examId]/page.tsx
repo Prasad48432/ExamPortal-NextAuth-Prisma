@@ -39,6 +39,10 @@ export default async function Page({
     return <div>Attempt not found</div>;
   }
 
+  if(attempt.data.status === 'completed'){
+    return <div>Exam already completed</div>
+  }
+
   let questions: Question[] = [];
   const storedQuestions = attempt.data.questions;
 

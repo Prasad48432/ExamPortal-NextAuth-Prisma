@@ -9,7 +9,11 @@ export default async function Exams() {
   const session = await auth();
   if (!session) redirect("/sign-in");
 
-  const exams = await db.exam.findMany();
+  const exams = await db.exam.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return (
     <div className="min-h-screen ">

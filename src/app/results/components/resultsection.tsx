@@ -141,9 +141,19 @@ const ResultSection = ({
                 </dt>
                 <dd className="mt-1 text-sm lg:text-base font-medium text-red-500 sm:mt-0 sm:col-span-2">
                   {Array.isArray(result.answers)
-                    ? result.answers.length -
-                      (result.answers as any[]).filter((a) => a?.is_correct)
-                        .length
+                    ? (result.answers as any[]).filter(
+                        (a) => !a?.is_correct && a?.selected_option !== -1
+                      ).length
+                    : 0}
+                </dd>
+              </div>
+              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
+                <dt className="text-sm lg:text-base font-medium">Unanswered</dt>
+                <dd className="mt-1 text-sm lg:text-base font-medium text-yellow-500 sm:mt-0 sm:col-span-2">
+                  {Array.isArray(result.answers)
+                    ? (result.answers as any[]).filter(
+                        (a) => a?.selected_option === -1
+                      ).length
                     : 0}
                 </dd>
               </div>
@@ -152,7 +162,9 @@ const ResultSection = ({
         </Card>
         <Card className="w-full lg:min-h-[415px] lg:w-1/2 border bg-card text-card-foreground shadow">
           <CardHeader>
-            <CardTitle className="text-base lg:text-lg">Bar Chart - Multiple</CardTitle>
+            <CardTitle className="text-base lg:text-lg">
+              Bar Chart - Multiple
+            </CardTitle>
             <CardDescription>January - June 2024</CardDescription>
           </CardHeader>
           <CardContent>

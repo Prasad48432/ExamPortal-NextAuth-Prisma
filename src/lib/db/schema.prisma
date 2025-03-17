@@ -63,17 +63,19 @@ model Exam {
 }
 
 model ExamResult {
-    id          String    @id @default(uuid())
-    userId      String
-    examId      String
-    score       Float
-    answers     Json?
-    questions   Json?
-    status      String
-    completedAt DateTime?
-    createdAt   DateTime  @default(now())
-    exam        Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
-    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id            String    @id @default(uuid())
+    userId        String
+    examId        String
+    score         Float
+    answers       Json?
+    questions     Json?
+    status        String
+    securityCheck Boolean   @default(false)
+    completedAt   DateTime?
+    startedAt     DateTime?
+    createdAt     DateTime  @default(now())
+    exam          Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+    user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Question {

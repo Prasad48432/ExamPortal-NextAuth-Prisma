@@ -1,5 +1,5 @@
 "use client";
-import { AlertCircle, Clock, FileText, TrendingUp, Users } from "lucide-react";
+import { AlertCircle, Clock, FileText, TrendingUp, Trophy, Users } from "lucide-react";
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,11 @@ import {
 import { Exam } from "@prisma/client";
 import { startExam } from "@/lib/questionActions";
 import { ToastError } from "@/components/toast";
-import { useFullScreen } from "@/hooks/useFullScreen";
 import { redirect } from "next/navigation";
 
 const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { enterFullScreen } = useFullScreen();
   const [loading, setLoading] = useState(false);
 
   const openModal = (exam: Exam) => {
@@ -46,7 +44,6 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
     if (response.success) {
       setLoading(false);
       closeModal();
-      await enterFullScreen();
       redirect(`/exams/${examId}?attemptId=${response.examResult?.id}`);
     } else {
       ToastError({ message: response.message || "error" });
@@ -94,7 +91,7 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
                       {exam.totalQuestions} questions
                     </p>
                     <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
-                      <Users className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
+                      <Trophy className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
                       Passing score: {exam.passingScore}%
                     </p>
                   </div>

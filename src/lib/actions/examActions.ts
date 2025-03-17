@@ -51,6 +51,29 @@ export async function getAttemptDetails(attemptId: string){
   }
 }
 
+export async function validateSecurityCheck(attemptId: string) {
+  try {
+    const updatedAttempt = await db.examResult.update({
+      where: { id: attemptId },
+      data: {
+        securityCheck: true,
+        startedAt: new Date().toISOString(),
+      },
+      select: {
+        id: true,
+        securityCheck: true,
+        startedAt: true, // Select other required fields
+      },
+    });
+
+    return { success: true, attempt: updatedAttempt };
+  } catch (error) {
+    return { success: false, error: error };
+  }
+}
+
+
+
 export async function submitExamResult(attemptId: string, score: number, formattedAnswers: JsonValue){
   try {
     await db.examResult.update({
@@ -63,7 +86,7 @@ export async function submitExamResult(attemptId: string, score: number, formatt
       },
     });
 
-    return { success: true};
+    return { success: true, attemptId};
   } catch (error) {
     return { success: false };
   }

@@ -44,7 +44,9 @@ export async function startExam(userId: string, examId: string) {
           questions: Prisma.JsonNull,
           answers: Prisma.JsonNull,
           status: "ongoing",
+          securityCheck: false,
           completedAt: null,
+          startedAt: null,
         },
         select: { id: true },
       });

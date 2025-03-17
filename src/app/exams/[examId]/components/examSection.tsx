@@ -1,9 +1,11 @@
 "use client";
 import { Exam, ExamResult, Question } from "@prisma/client";
 import {
+  AlertCircle,
   ChevronRight,
   CircleCheck,
   Clock,
+  Maximize,
   Minimize,
   Settings,
   WifiHigh,
@@ -13,9 +15,21 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useFullScreen } from "@/hooks/useFullScreen";
-import { submitExamResult } from "@/lib/actions/examActions";
+import {
+  submitExamResult,
+  validateSecurityCheck,
+} from "@/lib/actions/examActions";
 import { useRouter } from "next/navigation";
 import useCountdown from "@/hooks/useCountdown";
+import { ToastError } from "@/components/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const ExamSection = ({
   lockQuestions,
@@ -31,13 +45,23 @@ const ExamSection = ({
   const [questions, setQuestions] = useState<Question[]>(lockQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const submittedRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
-  const { exitFullScreen, isFullScreen } = useFullScreen();
+  const { exitFullScreen, isFullScreen, enterFullScreen } = useFullScreen();
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { secondsLeft, start } = useCountdown();
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const showTimerExpiryToast = () => {
+    ToastError({ message: "Last 30 seconds left, hurry up!" });
+  };
 
   const handleSubmit = async () => {
     if (submittedRef.current) return;
@@ -46,7 +70,6 @@ const ExamSection = ({
     setSubmitting(true);
 
     try {
-      const answeredQuestions = Object.keys(answers).length;
       const correctAnswers = questions.filter(
         (q) => answers[q.id] === q.correctAnswer
       ).length;
@@ -69,19 +92,38 @@ const ExamSection = ({
         await exitFullScreen();
       }
 
-      router.push("/exams");
+      router.push(`/results/${result.attemptId}`);
     } catch (err) {
       console.error("Error submitting exam:", err);
       setSubmitting(false);
     }
   };
 
+  const { secondsLeft, start } = useCountdown(
+    handleSubmit,
+    showTimerExpiryToast
+  );
+
   useEffect(() => {
-    const startTime = new Date(attempt.createdAt).getTime();
-    const totalDuration = examDetails.duration * 60 * 1000; // Convert to ms
-    const endTime = startTime + totalDuration;
-    start(Math.max((endTime - Date.now()) / 1000, 0));
+    if (attempt.securityCheck === true && attempt.startedAt) {
+      const startTime = new Date(attempt.startedAt).getTime();
+      const totalDuration = examDetails.duration * 60 * 1000; // Convert to ms
+      const endTime = startTime + totalDuration;
+      start(Math.max((endTime - Date.now()) / 1000, 0));
+    }
   }, []);
+
+  const activateFullScreen = async (isFullScreen: boolean) => {
+    if (!isFullScreen) {
+      await enterFullScreen();
+    }
+  };
+
+  const deactivateFullScreen = async (isFullScreen: boolean) => {
+    if (isFullScreen) {
+      await exitFullScreen();
+    }
+  };
 
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {
     setAnswers((prev) => ({
@@ -113,127 +155,48 @@ const ExamSection = ({
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  return (
-    // <div>
-    //   <div className="overflow-hidden min-h-screen">
-    //     <div className="px-4 py-5 sm:px-6 flex justify-between items-center sticky top-0 transform z-40">
-    //       <div>
-    //         <h3 className="leading-6 font-medium">
-    //           {examDetails.title}
-    //         </h3>
-    //         <p className=" max-w-2xl text-sm">
-    //           Question {currentQuestionIndex + 1} of {questions.length}
-    //         </p>
-    //       </div>
-    //       <div className="flex items-center text-sm font-medium">
-    //         <Clock className="h-5 w-5 mr-1" />
-    //         Time left: {timeLeft !== null ? formatTime(timeLeft) : "Loading..."}
-    //       </div>
-    //     </div>
-    //     <div className="flex flex-col lg:flex-row gap-4 divide-x h-full items-center justify-center">
-    //       <div className="px-4 py-5 sm:p-6 select-none w-full lg:w-3/4 h-full min-h-[120vh]">
-    //   <div className="flex flex-col lg:flex-row items-center justify-center mb-6 gap-2">
-    //     <div className="w-full flex flex-col">
-    //       <h4 className="text-lg font-medium mb-4 select-none">
-    //         {currentQuestion.questionText}
-    //       </h4>
-    //       <div className="space-y-3 select-none">
-    //         {currentQuestion.options.map((option, index) => (
-    //           <div key={index} className="flex items-center">
-    //             <input
-    //               id={`option-${index}`}
-    //               name={`question-${currentQuestion.id}`}
-    //               type="radio"
-    //               className="focus:ring-primary/80 h-4 w-4 text-primary"
-    //               checked={answers[currentQuestion.id] === index}
-    //               onChange={() =>
-    //                 handleAnswerSelect(currentQuestion.id, index)
-    //               }
-    //             />
-    //             <label
-    //               htmlFor={`option-${index}`}
-    //               className="ml-3 block text-sm font-medium text-foreground/80"
-    //             >
-    //               {option}
-    //             </label>
-    //           </div>
-    //         ))}
-    //       </div>
-    //     </div>
-    //   </div>
+  const handleSecurityCheck = async () => {
+    const result = await validateSecurityCheck(attempt.id);
 
-    //   <div className="flex justify-between select-none">
-    //     <button
-    //       onClick={handlePrevious}
-    //       disabled={currentQuestionIndex === 0}
-    //       className={`select-none inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md ${
-    //         currentQuestionIndex === 0
-    //           ? "bg-muted/40 text-foreground/50 cursor-not-allowed"
-    //           : "bg-muted/90 text-foreground hover:bg-muted"
-    //       } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary`}
-    //     >
-    //       Previous
-    //     </button>
-    //     {currentQuestionIndex < questions.length - 1 ? (
-    //       <button
-    //         onClick={handleNext}
-    //         className="select-none inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
-    //       >
-    //         Next
-    //       </button>
-    //     ) : (
-    //       <button
-    //         onClick={() => {}}
-    //         className="select-none inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
-    //       >
-    //         Submit Exam
-    //       </button>
-    //     )}
-    //   </div>
-    // </div>
-    //       <div className="mt-6 overflow-hidden select-none w-full lg:w-1/4 h-[80vh]">
-    // <div className="px-4 py-5 sm:p-6">
-    //   <h4 className="text-sm font-medium mb-4">
-    //     Question Navigator
-    //   </h4>
-    //   <div className="flex flex-wrap gap-3">
-    //     {questions.map((_, index) => (
-    //       <button
-    //         key={index}
-    //         onClick={() => setCurrentQuestionIndex(index)}
-    //         className={`h-12 w-12 flex items-center justify-center text-sm font-medium rounded-md ${
-    //           index === currentQuestionIndex
-    //             ? "bg-primary/80 text-primary-foreground"
-    //             : answers[questions[index].id] !== undefined
-    //             ? "bg-green-200 text-green-800 border border-green-300"
-    //             : "bg-muted/80 text-foreground hover:bg-muted"
-    //         }`}
-    //       >
-    //         {index + 1}
-    //       </button>
-    //     ))}
-    //   </div>
-    //   <div className="mt-4 flex gap-3 justify-start text-sm text-foreground/70">
-    //     <div className="flex items-center text-sm">
-    //       <div className="h-3 w-3 bg-green-200 border border-green-300 rounded-sm mr-1"></div>
-    //       <span>Answered</span>
-    //     </div>
-    //     <div className="flex items-center text-sm">
-    //       <div className="h-3 w-3 bg-muted/80 text-foreground hover:bg-muted border rounded-sm mr-1"></div>
-    //       <span>Unanswered</span>
-    //     </div>
-    //     <div className="flex items-center text-sm">
-    //       <div className="h-3 w-3 bg-primary/80 border border-primary rounded-sm mr-1"></div>
-    //       <span>Current</span>
-    //     </div>
-    //   </div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // </div>
-    <div className="min-h-screen bg-lightprimary-bg dark:bg-primary-bg">
-      <div className="sticky top-0 transform z-40 bg-lightprimary-bg dark:bg-primary-bg/90">
+    if (result.success) {
+      activateFullScreen(isFullScreen);
+      const startTime = new Date(
+        result.attempt?.startedAt || new Date()
+      ).getTime();
+      const totalDuration = examDetails.duration * 60 * 1000;
+      const endTime = startTime + totalDuration;
+      start(Math.max((endTime - Date.now()) / 1000, 0));
+      router.refresh();
+    }
+  };
+
+  if (attempt.securityCheck === false) {
+    return (
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex gap-4 items-center justify-end flex-col">
+            <h1 className="text-xl font-bold">Security Check</h1>
+            <p className="text-lg font-semibold">{examDetails.title}</p>
+            <p className="text-base">
+              complete this exam in {examDetails.duration}minutes
+            </p>
+            <Button
+              onClick={() => {
+                handleSecurityCheck();
+              }}
+              className="h-8"
+            >
+              Start Test
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen">
+      <div className="sticky top-0 transform z-40">
         <div className="absolute inset-0 h-full w-full bg-lightprimary-bg/70 dark:bg-primary-bg/90 !opacity-100 transition-opacity"></div>
         <nav className="border-b relative z-40 border-lightsecondary-border dark:border-secondary-border backdrop-blur-sm transition-opacity dark:shadow-lg dark:shadow-primary-bg/80">
           <div className="relative flex justify-between h-16 mx-auto lg:container lg:px-16 xl:px-20">
@@ -249,13 +212,15 @@ const ExamSection = ({
                     {userEmail}
                   </p>
                   <p className="font-medium text-xs flex items-center justify-center text-foreground/80">
-                    Web Dev Exam /{" "}
+                    {examDetails.title} /{" "}
                     <CircleCheck
                       className="ml-1 mr-1"
                       color="#16a34a"
                       size={15}
                     />{" "}
-                    <span className="text-green-600">Saved: 30 seconds ago</span>
+                    <span className="text-green-600">
+                      Saved: 30 seconds ago
+                    </span>
                   </p>
                 </div>
               </div>
@@ -268,7 +233,22 @@ const ExamSection = ({
                     : "Loading..."}
                 </div>
                 <div className="flex gap-2 items-center text-sm font-medium">
-                  <Minimize className="h-4 w-4 mr-1 cursor-pointer" />
+                  {isFullScreen && (
+                    <Minimize
+                      onClick={() => {
+                        deactivateFullScreen(isFullScreen);
+                      }}
+                      className="h-4 w-4 mr-1 cursor-pointer"
+                    />
+                  )}
+                  {!isFullScreen && (
+                    <Maximize
+                      onClick={() => {
+                        activateFullScreen(isFullScreen);
+                      }}
+                      className="h-4 w-4 mr-1 cursor-pointer"
+                    />
+                  )}
                   <Settings
                     className="h-4 w-4 mr-1 cursor-pointer"
                     strokeWidth={1.5}
@@ -276,11 +256,39 @@ const ExamSection = ({
                 </div>
                 <Button
                   onClick={() => {
-                    handleSubmit();
+                    openModal();
                   }}
                   className="h-8"
                 >
-                  Finish Test
+                  {submitting ? (
+                    <>
+                      <span>
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </span>
+                      Submitting...
+                    </>
+                  ) : (
+                    "Sumbit Test"
+                  )}
                 </Button>
               </div>
             </div>
@@ -288,7 +296,7 @@ const ExamSection = ({
         </nav>
       </div>
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-lightprimary-bg dark:bg-primary-bg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row lg:space-x-12">
           {/* Exam Section */}
           <div className="flex-1 min-h-[calc(100vh-210px)]">
@@ -299,7 +307,10 @@ const ExamSection = ({
                     {currentQuestion.questionText}
                   </h4>
                   {currentQuestion.questionImage && (
-                    <img className="my-4 w-48 object-cover" src={currentQuestion.questionImage} />
+                    <img
+                      className="my-4 w-[60%] object-cover"
+                      src={currentQuestion.questionImage}
+                    />
                   )}
                   <div className="space-y-3 select-none">
                     {currentQuestion.options.map((option, index) => (
@@ -347,12 +358,41 @@ const ExamSection = ({
                   </Button>
                 ) : (
                   <Button
+                    disabled={submitting}
                     onClick={() => {
-                      handleSubmit();
+                      openModal();
                     }}
                     className="select-none inline-flex h-8 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary/80 hover:bg-primary"
                   >
-                    Finish Test
+                    {submitting ? (
+                      <>
+                        <span>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                        </span>
+                        Submitting...
+                      </>
+                    ) : (
+                      "Sumbit Test"
+                    )}
                   </Button>
                 )}
               </div>
@@ -397,6 +437,91 @@ const ExamSection = ({
                 </div>
               </div>
             </div>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogOverlay className="bg-muted/40" />
+              <DialogContent className="gap-1">
+                <DialogHeader>
+                  <DialogTitle>Confirm Submit</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm mb-4">Review your info</p>
+                <div className="border-l-4 border-yellow-400 py-2 px-4 mb-6">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="h-5 w-5 dark:text-yellow-400 text-yellow-500" />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium dark:text-yellow-500 text-yellow-800">
+                        You still have{" "}
+                        <span className="bg-muted p-1 rounded-md text-foreground">
+                          {" "}
+                          {secondsLeft !== null
+                            ? formatTime(secondsLeft)
+                            : "Loading..."}
+                        </span>{" "}
+                        minutes left
+                      </h3>
+                      <div className="mt-2 text-sm dark:text-yellow-400 text-yellow-700">
+                        <ul className="list-disc pl-1 space-y-1">
+                          <li>
+                            Answered questions: {Object.keys(answers).length}
+                          </li>
+                          <li>
+                            Unanswered questions:{" "}
+                            {Object.keys(questions).length -
+                              Object.keys(answers).length}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    disabled={submitting}
+                    className="h-8 px-3"
+                    variant="secondary"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="h-8 px-3"
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <span>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                        </span>
+                        Submitting...
+                      </>
+                    ) : (
+                      "Sumbit"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

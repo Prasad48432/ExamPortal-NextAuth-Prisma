@@ -16,6 +16,9 @@ export default async function Results() {
     orderBy: {
       completedAt: "desc", // Sort by score in descending order
     },
+    where: {
+      status: "completed",
+    },
     include: {
       exam: true,
     },
@@ -52,7 +55,7 @@ export default async function Results() {
                               {result.exam?.title || "Unknown Exam"}
                             </p>
                             <div className="ml-2 flex-shrink-0 flex">
-                            <ScoreBadge score={result.score} />
+                              <ScoreBadge score={result.score} />
                             </div>
                           </div>
                           <div className="mt-2 sm:flex sm:justify-between">
@@ -82,9 +85,13 @@ export default async function Results() {
                                     <XCircle className="flex-shrink-0 mr-1.5 h-4 w-4 text-red-500" />
                                   )}
                                   {result.score >=
-                                  (result.exam?.passingScore || 70)
-                                    ? <span className="text-green-500">Passed</span>
-                                    : <span className="text-red-500">Failed</span>}
+                                  (result.exam?.passingScore || 70) ? (
+                                    <span className="text-green-500">
+                                      Passed
+                                    </span>
+                                  ) : (
+                                    <span className="text-red-500">Failed</span>
+                                  )}
                                 </p>
                               )}
                             </div>
@@ -101,12 +108,12 @@ export default async function Results() {
                 </ul>
               </div>
             ) : (
-              <div className="bg-white shadow rounded-lg">
+              <div className="">
                 <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                  <h3 className="text-lg leading-6 font-medium">
                     No exam results yet
                   </h3>
-                  <div className="mt-2 max-w-xl text-sm text-gray-500">
+                  <div className="mt-2 max-w-xl text-sm text-foreground/80">
                     <p>
                       You haven't taken any exams yet. Start by taking an exam
                       to see your results here.
@@ -117,7 +124,9 @@ export default async function Results() {
                       href="/exams"
                       className="inline-flex items-center text-sm font-medium"
                     >
-                      <Button>Browse Available Exams</Button>
+                      <Button className="h-8 px-3">
+                        Browse Available Exams
+                      </Button>
                     </Link>
                   </div>
                 </div>
