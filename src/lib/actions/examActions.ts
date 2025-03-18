@@ -36,8 +36,7 @@ export async function getExamDetails(examId: string) {
   }
 }
 
-
-export async function getAttemptDetails(attemptId: string){
+export async function getAttemptDetails(attemptId: string) {
   try {
     const attempt = await db.examResult.findUnique({
       where: {
@@ -72,9 +71,12 @@ export async function validateSecurityCheck(attemptId: string) {
   }
 }
 
-
-
-export async function submitExamResult(attemptId: string, score: number, formattedAnswers: JsonValue, passingScore: number){
+export async function submitExamResult(
+  attemptId: string,
+  score: number,
+  formattedAnswers: JsonValue,
+  passingScore: number
+) {
   try {
     await db.examResult.update({
       where: { id: attemptId },
@@ -87,7 +89,31 @@ export async function submitExamResult(attemptId: string, score: number, formatt
       },
     });
 
-    return { success: true, attemptId};
+    return { success: true, attemptId };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function saveExam(userId: string, examId: string, action: string) {
+  try {
+    if (action === "add") {
+      await db.savedExam.create({
+        data: {
+          userId: userId,
+          examId: examId,
+        },
+      });
+    } else if (action == "delete") {
+      await db.savedExam.deleteMany({
+        where: {
+          userId: userId,
+          examId: examId,
+        },
+      });
+    }
+
+    return { success: true };
   } catch (error) {
     return { success: false };
   }

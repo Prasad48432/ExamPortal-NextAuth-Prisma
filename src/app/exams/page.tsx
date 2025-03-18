@@ -13,6 +13,9 @@ export default async function Exams() {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      savedBy: true,
+    },
   });
 
   return (

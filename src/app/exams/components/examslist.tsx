@@ -1,5 +1,13 @@
 "use client";
-import { AlertCircle, Clock, FileText, TrendingUp, Trophy, Users } from "lucide-react";
+import {
+  AlertCircle,
+  Bookmark,
+  Clock,
+  FileText,
+  TrendingUp,
+  Trophy,
+  Users,
+} from "lucide-react";
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,15 +19,34 @@ import {
   DialogTitle,
   DialogOverlay,
 } from "@/components/ui/dialog";
-import { Exam } from "@prisma/client";
+import { Exam, SavedExam } from "@prisma/client";
 import { startExam } from "@/lib/questionActions";
-import { ToastError } from "@/components/toast";
+import { ToastError, ToastSuccess } from "@/components/toast";
 import { redirect } from "next/navigation";
+import { saveExam } from "@/lib/actions/examActions";
 
-const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
+type ExamWithSavedBy = Exam & {
+  savedBy: SavedExam[];
+};
+
+const ExamsList = ({
+  exams,
+  userId,
+}: {
+  exams: ExamWithSavedBy[];
+  userId: string;
+}) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [savedExams, setSavedExams] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(
+      exams.map((exam) => [
+        exam.id,
+        exam.savedBy.some((saved) => saved.userId === userId),
+      ])
+    )
+  );
 
   const openModal = (exam: Exam) => {
     setSelectedExam(exam);
@@ -51,6 +78,33 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
     }
   };
 
+  const handleExamSave = async ({
+    userId,
+    examId,
+    action,
+  }: {
+    userId: string;
+    examId: string;
+    action: string;
+  }) => {
+    const response = await saveExam(userId, examId, action);
+    if (response.success) {
+      if (action === "add") {
+        setSavedExams((prev) => ({
+          ...prev,
+          [examId]: !prev[examId],
+        }));
+      } else if (action === "delete") {
+        setSavedExams((prev) => ({
+          ...prev,
+          [examId]: !prev[examId],
+        }));
+      }
+    } else {
+      ToastError({ message: "Error saving exam" });
+    }
+  };
+
   return (
     <div className="flex-1">
       <div>
@@ -65,7 +119,7 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-medium truncate text-primary">
-                      {exam.title}
+                      {exam.title}{exam.id}
                     </h3>
                     <p className="mt-1 text-sm text-card-foreground">
                       {exam.description}
@@ -95,6 +149,24 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
                       Passing score: {exam.passingScore}%
                     </p>
                   </div>
+                  <Button
+                    onClick={() =>
+                      handleExamSave({
+                        userId: userId,
+                        examId: exam.id,
+                        action: savedExams[exam.id] ? "delete" : "add",
+                      })
+                    }
+                    className="h-8 w-8"
+                    variant={"outline"}
+                    size={"icon"}
+                  >
+                    {savedExams[exam.id] ? (
+                      <Bookmark size={18} className="fill-foreground" />
+                    ) : (
+                      <Bookmark size={18} />
+                    )}
+                  </Button>
                 </div>
               </Card>
             </li>
@@ -139,7 +211,11 @@ const ExamsList = ({ exams, userId }: { exams: Exam[]; userId: string }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button className="h-8 px-3" variant="secondary" onClick={closeModal}>
+              <Button
+                className="h-8 px-3"
+                variant="secondary"
+                onClick={closeModal}
+              >
                 Cancel
               </Button>
               <Button

@@ -37,6 +37,16 @@ const HomePage = async () => {
       exam: true,
     },
   });
+
+  const savedExams = await db.savedExam.findMany({
+    where: {
+      userId: session?.user?.id,
+    },
+    include: {
+      exam: true,
+    },
+  });
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5 mb-4 w-full">
@@ -261,7 +271,7 @@ const HomePage = async () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center w-full divide-y divide-border">
-              {true ? (
+              {savedExams.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-3">
                   <h1 className="text-xl font-semibold text-foreground/60">
                     Nothing saved yet.
@@ -273,16 +283,25 @@ const HomePage = async () => {
                   </Link>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <h1 className="text-xl font-semibold text-foreground/60">
-                    Nothing saved yet.
-                  </h1>
-                  <Link href={"/exams"}>
-                    <Button className="h-8 px-3">
-                      Bookmark avaialble exams
-                    </Button>
-                  </Link>
-                </div>
+                savedExams.slice(0, 3).map((savedexam) => (
+                  <div className="w-full py-2" key={savedexam.id}>
+                    <Link href={`/exams`} className="block w-full">
+                      <div className="flex items-center justify-between w-full">
+                        <p className="text-sm lg:text-base font-medium truncate">
+                          {savedexam.exam?.title}
+                        </p>
+                        <div className="ml-2 flex-shrink-0 flex">
+                          <p>Start Now</p>
+                        </div>
+                      </div>
+                      <div className="mt-1 sm:flex sm:justify-between">
+                        <p className="text-xs lg:text-sm font-medium truncate text-foreground/70">
+                          {savedexam.exam?.description}
+                        </p>
+                      </div>
+                    </Link>
+                  </div>
+                ))
               )}
             </div>
           </CardContent>

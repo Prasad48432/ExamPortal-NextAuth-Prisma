@@ -8,16 +8,18 @@ datasource db {
 }
 
 model User {
-    id            String       @id @default(cuid())
-    name          String?
-    emailVerified DateTime?
-    email         String?      @unique
-    image         String?
-    createdAt     DateTime     @default(now())
-    updatedAt     DateTime     @updatedAt
-    accounts      Account[]
-    exams         ExamResult[]
-    sessions      Session[]
+    id                  String               @id @default(cuid())
+    name                String?
+    emailVerified       DateTime?
+    email               String?              @unique
+    image               String?
+    createdAt           DateTime             @default(now())
+    updatedAt           DateTime             @updatedAt
+    accounts            Account[]
+    exams               ExamResult[]
+    sessions            Session[]
+    scheduledExams      SavedExam[] // New relation
+    bookmarkedQuestions BookmarkedQuestion[] // New relation
 }
 
 model Account {
@@ -51,15 +53,16 @@ model Session {
 }
 
 model Exam {
-    id             String       @id @default(uuid())
+    id             String          @id @default(uuid())
     title          String
     description    String
     duration       Int
     totalQuestions Int
     passingScore   Int
-    createdAt      DateTime     @default(now())
+    createdAt      DateTime        @default(now())
     results        ExamResult[]
     questions      Question[]
+    savedBy        SavedExam[]
 }
 
 model ExamResult {
@@ -81,7 +84,7 @@ model ExamResult {
 }
 
 model Question {
-    id            String   @id @default(uuid())
+    id            String               @id @default(uuid())
     examId        String
     questionText  String
     options       String[]
@@ -89,8 +92,9 @@ model Question {
     explanation   String?
     reference     String?
     questionImage String?
-    createdAt     DateTime @default(now())
-    exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+    createdAt     DateTime             @default(now())
+    exam          Exam                 @relation(fields: [examId], references: [id], onDelete: Cascade)
+    bookmarkedBy  BookmarkedQuestion[]
 }
 
 model VerificationToken {
@@ -99,4 +103,25 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model SavedExam {
+    id     String   @id @default(uuid())
+    userId String
+    examId String
+    user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    exam   Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+}
+
+model BookmarkedQuestion {
+    id         String   @id @default(uuid())
+    userId     String
+    questionId String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model RandomTable {
+    id    String    @id @default(uuid())
+    name  String    
 }
