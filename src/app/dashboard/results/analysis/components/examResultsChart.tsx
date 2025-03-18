@@ -43,12 +43,12 @@ const ResultsChart = ({ results }: { results: ExamResultWithExam[] }) => {
             if (active && payload && payload.length) {
               const { exam, score, passed, resultClass } = payload[0].payload;
               return (
-                <div className="bg-muted p-2 rounded-md shadow text-xs">
+                <div className="bg-background border p-2 rounded-md shadow text-xs">
                   <p className="font-semibold">{exam}</p>
-                  <p className="flex items-center">
+                  <span className="flex items-center">
                     <Tally5 size={15} className="mr-1 text-foreground/60" />
                     Score: <p className="font-semibold ml-1">{score}%</p>
-                  </p>
+                  </span>
                   <span className="flex items-center">
                     <BookOpenCheck size={15} className="mr-1 text-foreground/60" />
                     Status:{" "}

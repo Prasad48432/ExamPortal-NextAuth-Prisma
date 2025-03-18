@@ -6,6 +6,7 @@ import Link from "next/link";
 import React from "react";
 import ScoreBadge from "@/components/scorebadge";
 import { auth } from "@/lib/auth";
+import { formatTime } from "@/lib/utils/timeFomat";
 
 export default async function Results() {
   const session = await auth();
@@ -21,6 +22,7 @@ export default async function Results() {
       exam: true,
     },
   });
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <div className="flex w-full">
@@ -29,20 +31,26 @@ export default async function Results() {
             <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {results.map((result) => (
                 <li className="col-span-1" key={result.id}>
-                  <Link href={`/dashboard/results/${result.id}`} className="block">
+                  <Link
+                    href={`/dashboard/results/${result.id}`}
+                    className="block"
+                  >
                     <Card className="px-4 py-4 sm:px-6 border bg-card text-card-foreground shadow">
                       <div className="flex items-center justify-between">
                         <p className="text-sm lg:text-base font-medium text-primary truncate">
                           {result.exam?.title || "Unknown Exam"}
                         </p>
                         <div className="ml-2 flex-shrink-0 flex">
-                          <ScoreBadge score={result.score}  passed={result.examPassed} />
+                          <ScoreBadge
+                            score={result.score}
+                            passed={result.examPassed}
+                          />
                         </div>
                       </div>
                       <div className="mt-2 sm:flex sm:justify-between">
                         <div className="sm:flex">
                           <p className="flex items-center text-sm ">
-                            <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" />
+                            <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-foreground/70" />
                             {result.completedAt
                               ? new Date(result.completedAt).toLocaleString(
                                   "en-GB",
@@ -58,7 +66,7 @@ export default async function Results() {
                               : "Not completed"}
                           </p>
                           {result.score && (
-                            <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                            <p className="mt-2 flex items-center text-sm sm:mt-0 sm:ml-6">
                               {result.score >=
                               (result.exam?.passingScore || 70) ? (
                                 <CheckCircle className="flex-shrink-0 mr-1.5 h-4 w-4 text-green-500" />
@@ -71,6 +79,12 @@ export default async function Results() {
                               ) : (
                                 <span className="text-red-500">Failed</span>
                               )}
+                            </p>
+                          )}
+                          {result.startedAt && result.completedAt && (
+                            <p className="mt-2 flex items-center text-sm sm:mt-0 sm:ml-6">
+                              <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-foreground/70" />
+                              {formatTime(result.timeSpent)}
                             </p>
                           )}
                         </div>

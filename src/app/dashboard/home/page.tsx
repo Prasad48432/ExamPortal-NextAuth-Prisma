@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
+import { formatTime } from "@/lib/utils/timeFomat";
 import {
   Award,
   BookOpen,
@@ -38,7 +39,7 @@ const HomePage = async () => {
   });
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 mb-4 w-full">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5 mb-4 w-full">
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
           <div className="p-3 lg:p-5">
             <div className="flex items-center">
@@ -74,10 +75,8 @@ const HomePage = async () => {
                     <div className="text-lg font-medium text-primary">
                       {results.length > 0
                         ? `${(
-                            (results.filter(
-                              (result) =>
-                                result.examPassed
-                            ).length /
+                            (results.filter((result) => result.examPassed)
+                              .length /
                               results.length) *
                             100
                           ).toFixed(2)}%`
@@ -144,6 +143,34 @@ const HomePage = async () => {
             </div>
           </div>
         </Card>
+        <Card className="border bg-sidebar/80 text-card-foreground shadow">
+          <div className="p-3 lg:p-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Clock className="h-6 w-6 " />
+              </div>
+              <div className="ml-3 lg:ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium  truncate">
+                    Total Time Spent
+                  </dt>
+                  <dd>
+                    <div className="text-lg font-medium text-primary">
+                      {results.length > 0
+                        ? formatTime(
+                            results.reduce(
+                              (acc, result) => acc + (result.timeSpent || 0),
+                              0
+                            )
+                          )
+                        : "N/A"}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mb-4 w-full">
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
@@ -176,7 +203,10 @@ const HomePage = async () => {
                           {result.exam?.title || "Unknown Exam"}
                         </p>
                         <div className="ml-2 flex-shrink-0 flex">
-                          <ScoreBadge score={result.score} passed={result.examPassed} />
+                          <ScoreBadge
+                            score={result.score}
+                            passed={result.examPassed}
+                          />
                         </div>
                       </div>
                       <div className="mt-1 sm:flex sm:justify-between">
