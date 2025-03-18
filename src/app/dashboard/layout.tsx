@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import BreadcrumbDynamic from "./components/breadcrumb";
@@ -13,9 +13,6 @@ import BreadcrumbDynamic from "./components/breadcrumb";
 interface DashboardProps {
   children: ReactNode;
 }
-const handleSignOut = async () => {
-  await signOut();
-};
 export default async function Dashboard({ children }: DashboardProps) {
   const session = await auth();
   if (!session) redirect("/sign-in");

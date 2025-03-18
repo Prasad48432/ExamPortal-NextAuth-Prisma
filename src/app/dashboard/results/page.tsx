@@ -36,7 +36,7 @@ export default async function Results() {
                           {result.exam?.title || "Unknown Exam"}
                         </p>
                         <div className="ml-2 flex-shrink-0 flex">
-                          <ScoreBadge score={result.score} />
+                          <ScoreBadge score={result.score}  passed={result.examPassed} />
                         </div>
                       </div>
                       <div className="mt-2 sm:flex sm:justify-between">

@@ -74,7 +74,7 @@ export async function validateSecurityCheck(attemptId: string) {
 
 
 
-export async function submitExamResult(attemptId: string, score: number, formattedAnswers: JsonValue){
+export async function submitExamResult(attemptId: string, score: number, formattedAnswers: JsonValue, passingScore: number){
   try {
     await db.examResult.update({
       where: { id: attemptId },
@@ -83,6 +83,7 @@ export async function submitExamResult(attemptId: string, score: number, formatt
         answers: formattedAnswers as any,
         completedAt: new Date().toISOString(),
         status: "completed",
+        examPassed: score >= passingScore,
       },
     });
 

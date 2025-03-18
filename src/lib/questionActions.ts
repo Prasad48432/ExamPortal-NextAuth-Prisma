@@ -42,6 +42,7 @@ export async function startExam(userId: string, examId: string) {
           createdAt: new Date(),
           score: 0,
           questions: Prisma.JsonNull,
+          examPassed: false,
           answers: Prisma.JsonNull,
           status: "ongoing",
           securityCheck: false,

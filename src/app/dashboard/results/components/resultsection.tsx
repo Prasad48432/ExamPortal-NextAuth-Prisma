@@ -121,15 +121,14 @@ const ResultSection = ({
               <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
                 <dt className="text-sm lg:text-base font-medium ">Score</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <ScoreBadge score={result.score} />
+                  <ScoreBadge score={result.score} passed={result.examPassed} />
                 </dd>
               </div>
               <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
                 <dt className="text-sm lg:text-base font-medium">Status</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   <ExamStatusBadge
-                    score={result.score}
-                    passingScore={result.exam.passingScore}
+                    passed={result.examPassed}
                   />
                 </dd>
               </div>
@@ -205,16 +204,6 @@ const ResultSection = ({
               Review your answers and see explanations for each question.
             </p>
           </div>
-          {/* <select
-            className="border rounded-md p-2"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All questions</option>
-            <option value="correct">Correct Answers</option>
-            <option value="wrong">Wrong Answers</option>
-            <option value="unanswered">Unanswered</option>
-          </select> */}
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a fruit" />
@@ -232,7 +221,9 @@ const ResultSection = ({
         <div className="border-t lg:flex lg:flex-wrap">
           {filteredQuestions.length === 0 ? (
             <div className="px-4 py-5 text-center w-full">
-              <p className="text-foreground/70 text-xl font-semibold">No questions available.</p>
+              <p className="text-foreground/70 text-xl font-semibold">
+                Nothing found.
+              </p>
             </div>
           ) : (
             filteredQuestions.map((question: Question, index: number) => {

@@ -69,6 +69,7 @@ model ExamResult {
     score         Float
     answers       Json?
     questions     Json?
+    examPassed    Boolean   @default(false)
     status        String
     securityCheck Boolean   @default(false)
     completedAt   DateTime?

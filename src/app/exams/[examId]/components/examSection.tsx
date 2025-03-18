@@ -8,12 +8,13 @@ import {
   Maximize,
   Minimize,
   Settings,
+  Trophy,
   WifiHigh,
+  X,
 } from "lucide-react";
-import React, { act, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import {
   submitExamResult,
@@ -84,7 +85,8 @@ const ExamSection = ({
       const result = await submitExamResult(
         attempt.id,
         score,
-        formattedAnswers
+        formattedAnswers,
+        examDetails.passingScore
       );
       if (!result.success) throw new Error("error submitting");
 
@@ -273,6 +275,7 @@ const ExamSection = ({
                   />
                 </div>
                 <Button
+                  disabled={submitting}
                   onClick={() => {
                     openModal();
                   }}

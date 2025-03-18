@@ -5,8 +5,9 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { BarChart, Bar, CartesianGrid, XAxis, LabelList } from "recharts";
+import { BarChart, Bar, CartesianGrid, XAxis, LabelList, Cell } from "recharts";
 import type { Exam, ExamResult } from "@prisma/client";
+import { BookOpenCheck, Tally5 } from "lucide-react";
 
 interface ExamResultWithExam extends ExamResult {
   exam: Exam;
@@ -16,6 +17,8 @@ const ResultsChart = ({ results }: { results: ExamResultWithExam[] }) => {
   const chartData2 = results.map((result) => ({
     exam: result.exam?.title || "Unknown Exam",
     score: result.score,
+    passed: result.examPassed ? "Passed" : "Failed",
+    resultClass: result.examPassed ? "text-chart-success" : "text-chart-fail",
   }));
 
   const chartConfig = {
@@ -24,13 +27,11 @@ const ResultsChart = ({ results }: { results: ExamResultWithExam[] }) => {
       color: "hsl(var(--chart-1))",
     },
   } satisfies ChartConfig;
+
   return (
     <ChartContainer config={chartConfig}>
       <BarChart accessibilityLayer data={chartData2}>
-        <CartesianGrid
-          vertical={false}
-          strokeDasharray="3 3"
-        />
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis
           dataKey="exam"
           tickLine={false}
@@ -40,17 +41,38 @@ const ResultsChart = ({ results }: { results: ExamResultWithExam[] }) => {
         <ChartTooltip
           content={({ active, payload }) => {
             if (active && payload && payload.length) {
-              const { exam, score } = payload[0].payload;
+              const { exam, score, passed, resultClass } = payload[0].payload;
               return (
-                <div className="bg-muted p-2 rounded-md shadow text-sm">
-                  <p className="font-semibold">{exam}</p> <p>Score: {score}%</p>
+                <div className="bg-muted p-2 rounded-md shadow text-xs">
+                  <p className="font-semibold">{exam}</p>
+                  <p className="flex items-center">
+                    <Tally5 size={15} className="mr-1 text-foreground/60" />
+                    Score: <p className="font-semibold ml-1">{score}%</p>
+                  </p>
+                  <span className="flex items-center">
+                    <BookOpenCheck size={15} className="mr-1 text-foreground/60" />
+                    Status:{" "}
+                    <p className={`${resultClass} font-semibold ml-1`}>
+                      {passed}
+                    </p>
+                  </span>
                 </div>
               );
             }
             return null;
           }}
         />
-        <Bar dataKey="score" fill="var(--color-score)" radius={4}>
+        <Bar dataKey="score" radius={4}>
+          {chartData2.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={
+                results[index].examPassed
+                  ? "hsl(var(--chart-success))"
+                  : "hsl(var(--chart-fail))"
+              }
+            />
+          ))}
           <LabelList
             position="top"
             offset={6}
