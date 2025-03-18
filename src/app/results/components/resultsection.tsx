@@ -19,6 +19,15 @@ import {
 } from "@/components/ui/chart";
 import ScoreBadge from "./scorebadge";
 import ExamStatusBadge from "./statusbadge";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type ExamResultWithExam = ExamResult & { exam: Exam };
 
@@ -76,7 +85,7 @@ const ResultSection = ({
         <div className="flex-1 min-w-0">
           <Link
             href="/results"
-            className="text-primary/80 hover:text-primary inline-flex items-center text-base  mb-2 gap-1"
+            className="text-foreground/80 hover:text-foreground underline inline-flex items-center text-base mb-2"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to results
@@ -196,8 +205,8 @@ const ResultSection = ({
               Review your answers and see explanations for each question.
             </p>
           </div>
-          <select
-            className="border rounded-md p-2 "
+          {/* <select
+            className="border rounded-md p-2"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -205,7 +214,22 @@ const ResultSection = ({
             <option value="correct">Correct Answers</option>
             <option value="wrong">Wrong Answers</option>
             <option value="unanswered">Unanswered</option>
-          </select>
+          </select> */}
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger
+              className="w-[180px]"
+            >
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">All questions</SelectItem>
+                <SelectItem value="correct">Correct Answers</SelectItem>
+                <SelectItem value="wrong">Wrong Answers</SelectItem>
+                <SelectItem value="unanswered">Unanswered</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="border-t lg:flex lg:flex-wrap">
           {filteredQuestions.map((question: Question, index: number) => {
