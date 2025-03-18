@@ -6,7 +6,7 @@ import { CheckCircle, Clock, TrendingUp, XCircle } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
-import ScoreBadge from "./components/scorebadge";
+import ScoreBadge from "../../components/scorebadge";
 
 export default async function Results() {
   const session = await auth();

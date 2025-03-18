@@ -17,8 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import ScoreBadge from "./scorebadge";
-import ExamStatusBadge from "./statusbadge";
+import ScoreBadge from "../../../components/scorebadge";
+import ExamStatusBadge from "../../../components/statusbadge";
 import {
   Select,
   SelectContent,
