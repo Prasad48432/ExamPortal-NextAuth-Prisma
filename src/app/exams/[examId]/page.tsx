@@ -10,18 +10,25 @@ import { isJsonValueEmpty } from "./utils/isJsonEmpty";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: { examId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+
+
+type Params = Promise<{ examId: string }>
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+export default async function Page(props: {
+  params: Params
+  searchParams: SearchParams
 }) {
   const session = await auth();
   if (!session) redirect("/sign-in");
-  const { examId } = await params;
-  const resolvedSearchParams = await searchParams;
-  const attemptId = resolvedSearchParams?.attemptId as string | undefined;
+
+  const params = await props.params
+  const searchParams = await props.searchParams
+
+
+  const  examId  = params.examId;
+  const attemptId = searchParams.attemptId;
+
 
   if (!attemptId) {
     return <div>Invalid Attempt</div>;
@@ -33,7 +40,7 @@ export default async function Page({
     return <div>Invalid Exam</div>;
   }
 
-  const attempt = await getAttemptDetails(attemptId);
+  const attempt = await getAttemptDetails(attemptId as string);
 
   if (!attempt || !attempt.data) {
     return <div>Attempt not found</div>;

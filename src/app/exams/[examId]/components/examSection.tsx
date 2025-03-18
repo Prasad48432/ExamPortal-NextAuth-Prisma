@@ -92,7 +92,7 @@ const ExamSection = ({
         await exitFullScreen();
       }
 
-      router.push(`/results/${result.attemptId}`);
+      router.push(`/dashboard/results/${result.attemptId}`);
     } catch (err) {
       console.error("Error submitting exam:", err);
       setSubmitting(false);

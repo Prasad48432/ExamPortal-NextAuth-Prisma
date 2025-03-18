@@ -29,7 +29,7 @@ export default async function Results() {
             <ul className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {results.map((result) => (
                 <li className="col-span-1" key={result.id}>
-                  <Link href={`/results/${result.id}`} className="block">
+                  <Link href={`/dashboard/results/${result.id}`} className="block">
                     <Card className="px-4 py-4 sm:px-6 border bg-card text-card-foreground shadow">
                       <div className="flex items-center justify-between">
                         <p className="text-sm lg:text-base font-medium text-primary truncate">

@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Navbar = ({ session }: { session: any }) => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -167,6 +168,14 @@ const Navbar = ({ session }: { session: any }) => {
                 )}
               </motion.div>
               <ThemeToggle />
+              {session && <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  referrerPolicy="no-referrer"
+                  src={session.user?.image || ""}
+                  alt={session.user?.id}
+                />
+                <AvatarFallback className="rounded-lg">EX</AvatarFallback>
+              </Avatar>}
             </div>
           </div>
         </div>

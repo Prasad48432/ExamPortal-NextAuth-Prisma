@@ -28,6 +28,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import type { Session } from "next-auth";
+import { usePathname } from "next/navigation";
 
 // This is sample data.
 const data = {
@@ -58,7 +59,6 @@ const data = {
       title: "Results",
       url: "/results",
       icon: ChartBar,
-      isActive: true,
       items: [
         {
           title: "Results",
@@ -159,18 +159,107 @@ const data = {
   ],
 };
 
-export function AppSidebar({ session}: { session: Session | null}) {
+export function AppSidebar({ session }: { session: Session | null }) {
+  const pathname = usePathname(); // Get current route
+
+  const navMain = [
+    {
+      title: "Results",
+      url: "/results",
+      icon: ChartBar,
+      isActive: pathname.startsWith("/dashboard/results"),
+      items: [
+        {
+          title: "Results",
+          url: "/dashboard/results",
+        },
+        {
+          title: "Analysis",
+          url: "/dashboard/results/analysis",
+        },
+        {
+          title: "Settings",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+        },
+        {
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Documentation",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+  ];
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Header />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={session?.user}/>
+        <NavUser user={session?.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

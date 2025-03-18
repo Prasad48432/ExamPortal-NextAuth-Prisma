@@ -17,8 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import ScoreBadge from "../../../components/scorebadge";
-import ExamStatusBadge from "../../../components/statusbadge";
+import ScoreBadge from "@/components/scorebadge";
+import ExamStatusBadge from "@/components/statusbadge";
 import {
   Select,
   SelectContent,
@@ -84,7 +84,7 @@ const ResultSection = ({
       <div className="px-4 py-1 sm:px-6 md:flex md:items-center md:justify-between">
         <div className="flex-1 min-w-0">
           <Link
-            href="/results"
+            href="/dashboard/results"
             className="text-foreground/80 hover:text-foreground underline inline-flex items-center text-base mb-2"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -216,9 +216,7 @@ const ResultSection = ({
             <option value="unanswered">Unanswered</option>
           </select> */}
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger
-              className="w-[180px]"
-            >
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
             <SelectContent>
@@ -232,97 +230,103 @@ const ResultSection = ({
           </Select>
         </div>
         <div className="border-t lg:flex lg:flex-wrap">
-          {filteredQuestions.map((question: Question, index: number) => {
-            const answer = answersMap[question.id];
-            const isCorrect = answer?.is_correct;
-            const selectedOption = answer?.selected_option;
+          {filteredQuestions.length === 0 ? (
+            <div className="px-4 py-5 text-center w-full">
+              <p className="text-foreground/70 text-xl font-semibold">No questions available.</p>
+            </div>
+          ) : (
+            filteredQuestions.map((question: Question, index: number) => {
+              const answer = answersMap[question.id];
+              const isCorrect = answer?.is_correct;
+              const selectedOption = answer?.selected_option;
 
-            return (
-              <div key={question.id} className="px-4 py-5 lg:w-1/2 sm:px-6 ">
-                <div className="mb-4">
-                  <div className="flex items-start">
-                    <span className="flex-shrink-0 font-medium h-5 w-5  mr-2">
-                      {index + 1}.
-                    </span>
-                    <div className="w-full">
-                      <h4 className="text-base font-medium">
-                        {question.questionText}
-                        <span className="ml-1 text-blue-500">
-                          {selectedOption === -1 && "(*Unanswered)"}
-                        </span>
-                      </h4>
-                      <div className="mt-4 space-y-2">
-                        {question.options.map((option, optIndex) => (
-                          <div
-                            key={optIndex}
-                            className={`p-3 rounded-md ${
-                              selectedOption === optIndex
-                                ? isCorrect
+              return (
+                <div key={question.id} className="px-4 py-5 lg:w-1/2 sm:px-6 ">
+                  <div className="mb-4">
+                    <div className="flex items-start">
+                      <span className="flex-shrink-0 font-medium h-5 w-5  mr-2">
+                        {index + 1}.
+                      </span>
+                      <div className="w-full">
+                        <h4 className="text-base font-medium">
+                          {question.questionText}
+                          <span className="ml-1 text-blue-500">
+                            {selectedOption === -1 && "(*Unanswered)"}
+                          </span>
+                        </h4>
+                        <div className="mt-4 space-y-2">
+                          {question.options.map((option, optIndex) => (
+                            <div
+                              key={optIndex}
+                              className={`p-3 rounded-md ${
+                                selectedOption === optIndex
+                                  ? isCorrect
+                                    ? "bg-green-100 dark:bg-green-800 border border-green-300 dark:border-green-500"
+                                    : "bg-red-100 dark:bg-red-800 border border-red-300 dark:border-red-500"
+                                  : question.correctAnswer === optIndex
                                   ? "bg-green-100 dark:bg-green-800 border border-green-300 dark:border-green-500"
-                                  : "bg-red-100 dark:bg-red-800 border border-red-300 dark:border-red-500"
-                                : question.correctAnswer === optIndex
-                                ? "bg-green-100 dark:bg-green-800 border border-green-300 dark:border-green-500"
-                                : "bg-gray-100 dark:bg-muted border border-gray-400 dark:border-border"
-                            }`}
-                          >
-                            <div className="flex items-start">
-                              {selectedOption === optIndex ? (
-                                isCorrect ? (
+                                  : "bg-gray-100 dark:bg-muted border border-gray-400 dark:border-border"
+                              }`}
+                            >
+                              <div className="flex items-start">
+                                {selectedOption === optIndex ? (
+                                  isCorrect ? (
+                                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                                  ) : (
+                                    <XCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
+                                  )
+                                ) : question.correctAnswer === optIndex ? (
                                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
                                 ) : (
-                                  <XCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-                                )
-                              ) : question.correctAnswer === optIndex ? (
-                                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                              ) : (
-                                <span className="h-5 w-5 mr-2 flex-shrink-0"></span>
-                              )}
-                              <span
-                                className={`text-sm ${
-                                  selectedOption === optIndex
-                                    ? isCorrect
+                                  <span className="h-5 w-5 mr-2 flex-shrink-0"></span>
+                                )}
+                                <span
+                                  className={`text-sm ${
+                                    selectedOption === optIndex
+                                      ? isCorrect
+                                        ? "text-green-700 dark:text-foreground"
+                                        : "text-red-700 dark:text-foreground"
+                                      : question.correctAnswer === optIndex
                                       ? "text-green-700 dark:text-foreground"
-                                      : "text-red-700 dark:text-foreground"
-                                    : question.correctAnswer === optIndex
-                                    ? "text-green-700 dark:text-foreground"
-                                    : "text-gray-700 dark:text-foreground"
-                                }`}
-                              >
-                                {option}
-                              </span>
+                                      : "text-gray-700 dark:text-foreground"
+                                  }`}
+                                >
+                                  {option}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {!isCorrect && (
-                  <div className="mt-4  p-4 rounded-md">
-                    <div className="flex">
-                      <div className="flex-shrink-0">
-                        <BookOpen className="h-5 w-5 text-blue-400" />
-                      </div>
-                      <div className="ml-3">
-                        <h3 className="text-sm font-medium text-blue-500">
-                          Explanation
-                        </h3>
-                        <div className="mt-2 text-sm text-blue-500">
-                          <p>{question.explanation}</p>
-                          {question.reference && (
-                            <p className="mt-2">
-                              <strong>Reference:</strong> {question.reference}
-                            </p>
-                          )}
+                          ))}
                         </div>
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
+
+                  {!isCorrect && (
+                    <div className="mt-4  p-4 rounded-md">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <BookOpen className="h-5 w-5 text-blue-400" />
+                        </div>
+                        <div className="ml-3">
+                          <h3 className="text-sm font-medium text-blue-500">
+                            Explanation
+                          </h3>
+                          <div className="mt-2 text-sm text-blue-500">
+                            <p>{question.explanation}</p>
+                            {question.reference && (
+                              <p className="mt-2">
+                                <strong>Reference:</strong> {question.reference}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

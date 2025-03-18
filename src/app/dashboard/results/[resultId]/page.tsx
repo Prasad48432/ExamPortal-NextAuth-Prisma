@@ -11,15 +11,15 @@ type Answer = {
   is_correct: boolean;
 };
 
-export default async function Page({
-  params,
-}: {
-  params: { resultId: string };
-}) {
+type Params = Promise<{ resultId: string }>;
+
+export default async function Page(props: { params: Params }) {
   const session = await auth();
   if (!session) redirect("/sign-in");
 
-  const { resultId } = await params;
+  const params = await props.params;
+  const resultId = params.resultId;
+
 
   const result = await db.examResult.findUnique({
     where: {
@@ -42,16 +42,12 @@ export default async function Page({
   }, {} as Record<string, any>);
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row lg:space-x-12 w-full">
-          <ResultSection
-            result={result}
-            gotQuestions={questions.data as Question[]}
-            answersMap={answersMap}
-          />
-        </div>
-      </div>
+    <div className="flex flex-col items-center justify-center w-full">
+      <ResultSection
+        result={result}
+        gotQuestions={questions.data as Question[]}
+        answersMap={answersMap}
+      />
     </div>
   );
 }
