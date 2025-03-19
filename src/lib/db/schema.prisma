@@ -8,18 +8,24 @@ datasource db {
 }
 
 model User {
-    id                  String               @id @default(cuid())
-    name                String?
-    emailVerified       DateTime?
-    email               String?              @unique
-    image               String?
-    createdAt           DateTime             @default(now())
-    updatedAt           DateTime             @updatedAt
-    accounts            Account[]
-    exams               ExamResult[]
-    sessions            Session[]
-    scheduledExams      SavedExam[] // New relation
-    bookmarkedQuestions BookmarkedQuestion[] // New relation
+    id                      String               @id @default(cuid())
+    name                    String?
+    emailVerified           DateTime?
+    email                   String?              @unique
+    image                   String?
+    totalExamsTaken         Int?                 @default(0)
+    totalQuestionsAttempted Int?                 @default(0)
+    totalCorrect            Int?                 @default(0)
+    totalWrong              Int?                 @default(0)
+    totalUnanswered         Int?                 @default(0)
+    totalTimeSpent          Int?                 @default(0)
+    createdAt               DateTime             @default(now())
+    updatedAt               DateTime             @updatedAt
+    accounts                Account[]
+    exams                   ExamResult[]
+    sessions                Session[]
+    scheduledExams          SavedExam[] // New relation
+    bookmarkedQuestions     BookmarkedQuestion[] // New relation
 }
 
 model Account {
@@ -53,13 +59,13 @@ model Session {
 }
 
 model Exam {
-    id             String          @id @default(uuid())
+    id             String       @id @default(uuid())
     title          String
     description    String
     duration       Int
     totalQuestions Int
     passingScore   Int
-    createdAt      DateTime        @default(now())
+    createdAt      DateTime     @default(now())
     results        ExamResult[]
     questions      Question[]
     savedBy        SavedExam[]
@@ -106,11 +112,11 @@ model VerificationToken {
 }
 
 model SavedExam {
-    id     String   @id @default(uuid())
+    id     String @id @default(uuid())
     userId String
     examId String
-    user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    exam   Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
 }
 
 model BookmarkedQuestion {
@@ -119,9 +125,4 @@ model BookmarkedQuestion {
     questionId String
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-}
-
-model RandomTable {
-    id    String    @id @default(uuid())
-    name  String    
 }

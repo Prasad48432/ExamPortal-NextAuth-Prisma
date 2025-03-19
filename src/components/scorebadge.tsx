@@ -18,7 +18,7 @@ const ScoreBadge: React.FC<ScoreBadgeProps> = ({ score, passed }) => {
   };
 
   return (
-    <span className={`px-3 py-0.5 inline-flex text-sm leading-5 font-semibold rounded-full ${getBadgeClasses()}`}>
+    <span className={`px-3 py-0.5 inline-flex text-xs lg:text-sm leading-5 font-semibold rounded-full ${getBadgeClasses()}`}>
       {score}%
     </span>
   );

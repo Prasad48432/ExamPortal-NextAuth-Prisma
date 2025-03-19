@@ -7,6 +7,7 @@ import React from "react";
 import ScoreBadge from "@/components/scorebadge";
 import { auth } from "@/lib/auth";
 import { formatTime } from "@/lib/utils/timeFomat";
+import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 
 export default async function Results() {
   const session = await auth();
@@ -52,17 +53,7 @@ export default async function Results() {
                           <p className="flex items-center text-sm ">
                             <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-foreground/70" />
                             {result.completedAt
-                              ? new Date(result.completedAt).toLocaleString(
-                                  "en-GB",
-                                  {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  }
-                                )
+                              ? formatDateTime(result.completedAt)
                               : "Not completed"}
                           </p>
                           {result.score && (

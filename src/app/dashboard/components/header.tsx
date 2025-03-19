@@ -8,11 +8,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="flex items-center justify-center">
         <SidebarMenuButton
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -25,6 +26,7 @@ export function Header() {
             <span className="truncate text-xs">User dashboard</span>
           </div>
         </SidebarMenuButton>
+        <ThemeToggle />
       </SidebarMenuItem>
     </SidebarMenu>
   );

@@ -1,14 +1,20 @@
 "use client";
 import {
   BookOpen,
+  CheckCheck,
   CheckCircle,
   ChevronLeft,
+  Clock,
+  Info,
   Lightbulb,
+  MessageSquareOff,
+  SquareSlash,
+  X,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import type { ExamResult, Exam, Question } from "@prisma/client";
+import type { User, ExamResult, Exam, Question } from "@prisma/client";
 import {
   Card,
   CardContent,
@@ -16,13 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartConfig } from "@/components/ui/chart";
 import ScoreBadge from "@/components/scorebadge";
 import ExamStatusBadge from "@/components/statusbadge";
 import {
@@ -30,27 +30,33 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { formatTime } from "@/lib/utils/timeFomat";
 import {
+  getAccuracyColor,
   getExamFeedback,
   getFeedbackColor,
   getQuestionFeedback,
 } from "../helpers/resultHelpers";
+import { InfoPopover } from "./infoPopover";
+import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 
 type ExamResultWithExam = ExamResult & { exam: Exam };
+
+type UserwithResults = User & { exams: ExamResult[] };
 
 const ResultSection = ({
   result,
   gotQuestions,
   answersMap,
+  userWithResults,
 }: {
   result: ExamResultWithExam;
   gotQuestions: Question[];
   answersMap: any;
+  userWithResults: UserwithResults;
 }) => {
   const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -91,6 +97,43 @@ const ResultSection = ({
     return true; // Show all by default
   });
 
+  const examCorrect = Array.isArray(result.answers)
+    ? (result.answers as any[]).filter((a) => a?.is_correct).length
+    : 0;
+
+  const examWrong = Array.isArray(result.answers)
+    ? (result.answers as any[]).filter(
+        (a) => !a?.is_correct && a?.selected_option !== -1
+      ).length
+    : 0;
+
+  const examAttempted = examCorrect + examWrong;
+
+  const examUnanswered = Array.isArray(result.answers)
+    ? (result.answers as any[]).filter((a) => a?.selected_option === -1).length
+    : 0;
+
+  const totalTimeSpent = userWithResults.totalTimeSpent || 0;
+  const totalExamsTaken = userWithResults.totalExamsTaken || 0;
+  const totalQuestionsAttempted = userWithResults.totalQuestionsAttempted || 0;
+  const totalCorrectAnswers = userWithResults.totalCorrect || 0;
+  const totalWrongAnswers = userWithResults.totalWrong || 0;
+  const totalUnanswered = userWithResults.totalUnanswered || 0;
+
+  const examTimeSpent = result.timeSpent;
+  const totalAverageTimeSpent = totalTimeSpent / totalExamsTaken;
+
+  const examPerQuestionTimeSpent =
+    examTimeSpent / (examAttempted + examUnanswered);
+  const totalAverageTimeSpentperQuestion =
+    totalTimeSpent / (totalQuestionsAttempted + totalUnanswered);
+
+  const examAccuracy = ((examCorrect / examAttempted) * 100).toFixed(2);
+  const totalAverageAccuracy = (
+    (totalCorrectAnswers / totalQuestionsAttempted) *
+    100
+  ).toFixed(2);
+
   return (
     <div className="w-full">
       <div className="px-4 py-1 sm:px-6 md:flex md:items-center md:justify-between">
@@ -110,7 +153,7 @@ const ResultSection = ({
       </div>
 
       <div className="w-full px-4 py-5 sm:px-6 flex flex-col lg:flex-row gap-4 items-center justify-center">
-        <Card className="w-full lg:min-h-[415px] lg:w-1/2 border bg-card text-card-foreground shadow">
+        <Card className="w-full lg:w-[40%] border bg-card text-card-foreground shadow">
           <CardHeader>
             <CardTitle className="text-base lg:text-lg leading-none">
               Result Summary
@@ -119,156 +162,193 @@ const ResultSection = ({
               {" "}
               <p className="max-w-2xl text-xs lg:text-sm">
                 Completed on:{" "}
-                <span className="text-foreground/80">
+                <span className="text-foreground/90 font-medium">
                   {result.completedAt
-                    ? new Date(result.completedAt).toLocaleString()
+                    ? formatDateTime(result.completedAt)
                     : "Not completed"}
                 </span>
               </p>
-              <p className="mt-1 max-w-2xl text-xs lg:text-sm">
+              <p className="mt-0.5 max-w-2xl text-xs lg:text-sm">
                 Attempt id:{" "}
-                <span className="text-foreground/80">{result.id}</span>
+                <span className="text-foreground/80 font-medium">
+                  {result.id}
+                </span>
               </p>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="border-t  px-4 py-5 sm:p-0">
+            <div className="border-t  px-4 sm:p-0">
               <dl className="sm:divide-y">
-                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-medium ">Score</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div className="py-2 px-2 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-semibold ">Score</dt>
+                  <dd className="mt-1 text-sm sm:mt-0 sm:col-span-2">
                     <ScoreBadge
                       score={result.score}
                       passed={result.examPassed}
                     />
                   </dd>
                 </div>
-                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-medium">Status</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div className="py-2 px-2 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-semibold">Status</dt>
+                  <dd className="mt-1 text-sm sm:mt-0 sm:col-span-2">
                     <ExamStatusBadge passed={result.examPassed} />
                   </dd>
                 </div>
-                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-medium">
-                    Correct Answers
-                  </dt>
-                  <dd className="mt-1 text-sm lg:text-base font-medium text-green-500 sm:mt-0 sm:col-span-2">
-                    {Array.isArray(result.answers)
-                      ? (result.answers as any[]).filter((a) => a?.is_correct)
-                          .length
-                      : 0}
+                <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-semibold">Correct Answers</dt>
+                  <dd className="mt-1 text-sm lg:text-base font-semibold text-green-500 sm:mt-0 sm:col-span-2">
+                    {examCorrect}
                   </dd>
                 </div>
-                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-medium">
-                    Wrong Answers
-                  </dt>
-                  <dd className="mt-1 text-sm lg:text-base font-medium text-red-500 sm:mt-0 sm:col-span-2">
-                    {Array.isArray(result.answers)
-                      ? (result.answers as any[]).filter(
-                          (a) => !a?.is_correct && a?.selected_option !== -1
-                        ).length
-                      : 0}
+                <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-semibold">Wrong Answers</dt>
+                  <dd className="mt-1 text-sm lg:text-base font-semibold text-red-500 sm:mt-0 sm:col-span-2">
+                    {examWrong}
                   </dd>
                 </div>
-                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-medium">
-                    Unanswered
-                  </dt>
+                <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-semibold">Unanswered</dt>
                   <dd className="mt-1 text-sm lg:text-base font-medium text-yellow-500 sm:mt-0 sm:col-span-2">
-                    {Array.isArray(result.answers)
-                      ? (result.answers as any[]).filter(
-                          (a) => a?.selected_option === -1
-                        ).length
-                      : 0}
+                    {examUnanswered}
                   </dd>
                 </div>
               </dl>
             </div>
           </CardContent>
         </Card>
-        <Card className="w-full lg:min-h-[415px] lg:w-1/2 border bg-card text-card-foreground shadow">
+        <Card className="w-full lg:w-[60%] border bg-card text-card-foreground shadow">
           <CardHeader>
             <CardTitle className="text-base lg:text-lg leading-none">
               Detailed Analysis
             </CardTitle>
-            <CardDescription className="leading-none">
+            <CardDescription className="leading-none text-xs lg:text-sm flex flex-col">
               Exam analysis on every aspect
+              <span className="hidden lg:flex items-center justify-end mt-[5px]">
+                <span className="min-w-44 flex items-center justify-between lg:gap-4 text-sm font-semibold">
+                  <p>Exam Average</p>
+                  <p>/</p>
+                  <p>Total Average</p>
+                </span>
+              </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* <ChartContainer config={chartConfig}>
-              <RadarChart data={chartData}>
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="line" />}
-                />
-                <PolarAngleAxis dataKey="month" />
-                <PolarGrid />
-                <Radar
-                  dataKey="desktop"
-                  fill="var(--color-desktop)"
-                  fillOpacity={0.6}
-                />
-                <Radar dataKey="mobile" fill="var(--color-mobile)" />
-              </RadarChart>
-            </ChartContainer> */}
-            <div className="border-t  px-4 py-5 sm:p-0">
+            <div className="border-t sm:p-0">
               <dl className="sm:divide-y">
-                <div className="py-4 sm:py-5 flex flex-col sm:gap-2">
-                  <div className="flex flex-row items-center justify-between">
-                    <dt className="text-sm lg:text-base font-medium">
+                <div className="py-2 px-2 flex flex-col sm:gap-2">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+                    <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
                       Total time spent
+                      <Clock
+                        className="text-foreground/80 hidden lg:block"
+                        size={18}
+                      />
                     </dt>
-                    <dd
-                      className={`${getFeedbackColor(
-                        result.exam.duration,
-                        result.timeSpent
-                      )} text-sm font-semibold`}
-                    >
-                      {formatTime(result.timeSpent)}
-                    </dd>
-                  </div>
-                  <div
-                    className="mt-3 flex items-center justify-center gap-1 p-2 rounded-md 
-                  bg-yellow-100 text-yellow-800 
-                  dark:bg-yellow-900 dark:text-yellow-300"
-                  >
-                    <Lightbulb size={17} className="mt-[2px]" />
-                    <span className="text-xs">
-                      {getExamFeedback(result.exam.duration, result.timeSpent)}
+                    <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
+                      <p
+                        className={`${getFeedbackColor(
+                          result.exam.duration,
+                          result.timeSpent
+                        )}`}
+                      >
+                        {formatTime(examTimeSpent)}
+                      </p>
+                      <p>/</p>
+                      <p className="text-foreground flex items-center justify-center gap-2">
+                        {formatTime(totalAverageTimeSpent)}
+                        <InfoPopover text="Average time spent per exam" />
+                      </p>
                     </span>
                   </div>
                 </div>
-
-                <div className="py-4 sm:py-5 flex flex-col sm:gap-2">
-                  <div className="flex flex-row items-center justify-between">
-                    <dt className="text-sm lg:text-base font-medium">
+                <div className="py-2 px-2 flex flex-col sm:gap-2">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+                    <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
                       Time per question
+                      <Clock
+                        className="text-foreground/80 hidden lg:block"
+                        size={18}
+                      />
                     </dt>
-                    <dd
-                      className={`${getFeedbackColor(
-                        result.exam.duration / result.exam.totalQuestions,
-                        result.timeSpent / result.exam.totalQuestions
-                      )} text-sm font-semibold`}
-                    >
-                      {formatTime(
-                        result.timeSpent / result.exam.totalQuestions
-                      )}
-                    </dd>
+                    <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
+                      <p
+                        className={`${getFeedbackColor(
+                          result.exam.duration / result.exam.totalQuestions,
+                          result.timeSpent / result.exam.totalQuestions
+                        )}`}
+                      >
+                        {formatTime(examPerQuestionTimeSpent)}
+                      </p>
+                      <p>/</p>
+                      <p className="text-foreground flex items-center justify-center gap-2">
+                        {formatTime(totalAverageTimeSpentperQuestion)}
+                        <InfoPopover text="Average time spent per question overall" />
+                      </p>
+                    </span>
                   </div>
-                  <div
-                    className="mt-3 flex items-center justify-center gap-1 p-2 rounded-md 
-                  bg-yellow-100 text-yellow-800 
-                  dark:bg-yellow-900 dark:text-yellow-300"
-                  >
-                    <Lightbulb size={17} className="mt-[2px]" />
-                    <span className="text-xs">
-                      {getQuestionFeedback(
-                        result.exam.duration / result.exam.totalQuestions,
-                        result.timeSpent / result.exam.totalQuestions
-                      )}
+                </div>
+                <div className="py-2 px-2 flex flex-col sm:gap-2">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+                    <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
+                      Accuracy
+                      <CheckCheck
+                        className="text-foreground/80 hidden lg:block"
+                        size={18}
+                      />
+                    </dt>
+                    <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
+                      <p
+                        className={`${getAccuracyColor(
+                          (examCorrect / examAttempted) * 100
+                        )}`}
+                      >
+                        {examAccuracy}%
+                      </p>
+                      <p>/</p>
+                      <p className="text-foreground flex items-center justify-center gap-2">
+                        {totalAverageAccuracy}%
+                        <InfoPopover text="Average overall accuracy" />
+                      </p>
+                    </span>
+                  </div>
+                </div>
+                <div className="py-2 px-2 flex flex-col sm:gap-2">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+                    <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
+                      Wrong Answered
+                      <X
+                        className="text-foreground/80 hidden lg:block"
+                        size={18}
+                      />
+                    </dt>
+                    <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
+                      <p className={`text-chart-fail`}>{examWrong}</p>
+                      <p>/</p>
+                      <p className="text-foreground flex items-center justify-center gap-2">
+                        {totalWrongAnswers / totalExamsTaken}
+                        <InfoPopover text="Average no of wrong answers per exam" />
+                      </p>
+                    </span>
+                  </div>
+                </div>
+                <div className="py-2 px-2 flex flex-col sm:gap-2">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+                    <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
+                      Unanswered
+                      <MessageSquareOff
+                        className="text-foreground/80 hidden lg:block"
+                        size={18}
+                      />
+                    </dt>
+                    <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
+                      <p className={`text-yellow-600 dark:text-yellow-500`}>
+                        {examUnanswered}
+                      </p>
+                      <p>/</p>
+                      <p className="text-foreground flex items-center justify-center gap-2">
+                        {totalUnanswered / totalExamsTaken}
+                        <InfoPopover text="Average no of unanswered questions per exam" />
+                      </p>
                     </span>
                   </div>
                 </div>

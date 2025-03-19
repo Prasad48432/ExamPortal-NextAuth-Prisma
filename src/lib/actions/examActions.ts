@@ -77,18 +77,39 @@ export async function submitExamResult(
   formattedAnswers: JsonValue,
   passingScore: number,
   timeDifferenceInSeconds: number,
+  userId: string,
+  attemptedQuestions: number,
+  correctAnswers: number,
+  wrongAnswers: number,
+  unanswered: number
 ) {
   try {
-    await db.examResult.update({
-      where: { id: attemptId },
-      data: {
-        score: score,
-        answers: formattedAnswers as any,
-        completedAt: new Date().toISOString(),
-        status: "completed",
-        examPassed: score >= passingScore,
-        timeSpent: timeDifferenceInSeconds,
-      },
+    await db.$transaction(async (tx) => {
+      // Update examResult
+      await tx.examResult.update({
+        where: { id: attemptId },
+        data: {
+          score: score,
+          answers: formattedAnswers as any,
+          completedAt: new Date().toISOString(),
+          status: "completed",
+          examPassed: score >= passingScore,
+          timeSpent: timeDifferenceInSeconds,
+        },
+      });
+
+      // Update User table (assuming we are updating total exams taken, total time spent, etc.)
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          totalExamsTaken: { increment: 1 },
+          totalQuestionsAttempted: { increment: attemptedQuestions },
+          totalCorrect: { increment: correctAnswers },
+          totalWrong: { increment: wrongAnswers },
+          totalUnanswered: { increment: unanswered },
+          totalTimeSpent: { increment: timeDifferenceInSeconds },
+        },
+      });
     });
 
     return { success: true, attemptId };

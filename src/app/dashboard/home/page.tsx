@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import React from "react";
 import SavedExams from "./components/savedExams";
+import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 
 const HomePage = async () => {
   const session = await auth();
@@ -225,17 +226,7 @@ const HomePage = async () => {
                           <p className="flex items-center text-sm text-foreground/60">
                             <Clock className="flex-shrink-0 mr-1.5 h-4 w-4" />
                             {result.completedAt
-                              ? new Date(result.completedAt).toLocaleString(
-                                  "en-GB",
-                                  {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  }
-                                )
+                              ? formatDateTime(result.completedAt)
                               : "Not completed"}
                           </p>
                         </div>

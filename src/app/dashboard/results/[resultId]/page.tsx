@@ -30,6 +30,15 @@ export default async function Page(props: { params: Params }) {
     },
   });
 
+  const userWithResults = await db.user.findUnique({
+    where: {
+      id: session.user?.id
+    },
+    include: {
+      exams: true,
+    }
+  })
+
   if (!result?.examId || !Array.isArray(result.answers)) return;
 
   const questions = await getQuestionsbyExamId(result.examId);
@@ -41,12 +50,15 @@ export default async function Page(props: { params: Params }) {
     return acc;
   }, {} as Record<string, any>);
 
+  if (!userWithResults) return;
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <ResultSection
         result={result}
         gotQuestions={questions.data as Question[]}
         answersMap={answersMap}
+        userWithResults={userWithResults}
       />
     </div>
   );

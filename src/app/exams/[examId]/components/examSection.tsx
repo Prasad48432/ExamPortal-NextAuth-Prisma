@@ -75,6 +75,12 @@ const ExamSection = ({
         (q) => answers[q.id] === q.correctAnswer
       ).length;
 
+      const unanswered = Object.keys(questions).length -
+      Object.keys(answers).length;
+
+      const wrongAnswers = questions.length - (correctAnswers+unanswered);
+
+
       const score = Math.round((correctAnswers / questions.length) * 100);
       const formattedAnswers = questions.map((question) => ({
         question_id: question.id,
@@ -95,6 +101,11 @@ const ExamSection = ({
         formattedAnswers,
         examDetails.passingScore,
         timeDifferenceInSeconds,
+        attempt.userId,
+        correctAnswers+wrongAnswers,
+        correctAnswers,
+        wrongAnswers,
+        unanswered
       );
       if (!result.success) throw new Error("error submitting");
 
