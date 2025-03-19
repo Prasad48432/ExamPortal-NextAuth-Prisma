@@ -17,7 +17,7 @@ export default function BreadcrumbDynamic() {
   const pathSegments = pathname.split("/").filter((segment) => segment); // Split and remove empty segments
 
   return (
-    <Breadcrumb className="w-[90%] truncate ">
+    <Breadcrumb className="w-[90%] lg:w-full truncate">
       <BreadcrumbList>
         {pathSegments.map((segment, index) => {
           const isLast = index === pathSegments.length - 1;

@@ -17,6 +17,7 @@ import {
   CheckCircle,
   ChevronRight,
   Clock,
+  Target,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
@@ -40,6 +41,12 @@ const HomePage = async () => {
     },
   });
 
+  const user = await db.user.findUnique({
+    where: {
+      id: session?.user?.id,
+    },
+  });
+
   const savedExams = await db.savedExam.findMany({
     where: {
       userId: session?.user?.id,
@@ -51,18 +58,18 @@ const HomePage = async () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5 mb-4 w-full">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 mb-4 w-full">
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <div className="p-3 lg:p-5">
+          <div className="p-3 lg:p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <BookOpen className="h-6 w-6 " />
               </div>
-              <div className="ml-3 lg:ml-5 w-0 flex-1">
+              <div className="ml-3 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium truncate">Exams Taken</dt>
                   <dd>
-                    <div className="text-lg font-medium text-primary">
+                    <div className="text-base font-medium text-primary">
                       {results.length}
                     </div>
                   </dd>
@@ -73,18 +80,18 @@ const HomePage = async () => {
         </Card>
 
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <div className="p-3 lg:p-5">
+          <div className="p-3 lg:p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Award className="h-6 w-6 " />
               </div>
-              <div className="ml-3 lg:ml-5 w-0 flex-1">
+              <div className="ml-3 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium  truncate">
                     Pass Percentage
                   </dt>
                   <dd>
-                    <div className="text-lg font-medium text-primary">
+                    <div className="text-base font-medium text-primary">
                       {results.length > 0
                         ? `${(
                             (results.filter((result) => result.examPassed)
@@ -102,18 +109,18 @@ const HomePage = async () => {
         </Card>
 
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <div className="p-3 lg:p-5">
+          <div className="p-3 lg:p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <CheckCircle className="h-6 w-6 " />
               </div>
-              <div className="ml-3 lg:ml-5 w-0 flex-1">
+              <div className="ml-3 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium  truncate">
                     Average Score
                   </dt>
                   <dd>
-                    <div className="text-lg font-medium text-primary">
+                    <div className="text-base font-medium text-primary">
                       {results.length > 0
                         ? `${(
                             results.reduce(
@@ -131,18 +138,43 @@ const HomePage = async () => {
         </Card>
 
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <div className="p-3 lg:p-5">
+          <div className="p-3 lg:p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Target className="h-6 w-6 " />
+              </div>
+              <div className="ml-3 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium  truncate">
+                    Average Accuracy
+                  </dt>
+                  <dd>
+                    <div className="text-base font-medium text-primary">
+                      {(
+                        (user?.totalAccuracy ?? 0) /
+                        (user?.totalExamsTaken ?? 1)
+                      ).toFixed(2)}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="border bg-sidebar/80 text-card-foreground shadow">
+          <div className="p-3 lg:p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Award className="h-6 w-6 " />
               </div>
-              <div className="ml-3 lg:ml-5 w-0 flex-1">
+              <div className="ml-3 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium  truncate">
                     Highest Score
                   </dt>
                   <dd>
-                    <div className="text-lg font-medium text-primary">
+                    <div className="text-base font-medium text-primary">
                       {results.length > 0
                         ? `${Math.max(
                             ...results.map((result) => result.score)
@@ -156,18 +188,18 @@ const HomePage = async () => {
           </div>
         </Card>
         <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <div className="p-3 lg:p-5">
+          <div className="p-3 lg:p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Clock className="h-6 w-6 " />
               </div>
-              <div className="ml-3 lg:ml-5 w-0 flex-1">
+              <div className="ml-3 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium  truncate">
                     Total Time Spent
                   </dt>
                   <dd>
-                    <div className="text-lg font-medium text-primary">
+                    <div className="text-base font-medium text-primary">
                       {results.length > 0
                         ? formatTime(
                             results.reduce(

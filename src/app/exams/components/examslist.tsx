@@ -4,6 +4,7 @@ import {
   Bookmark,
   Clock,
   FileText,
+  Trash,
   TrendingUp,
   Trophy,
   Users,
@@ -116,39 +117,58 @@ const ExamsList = ({
           {exams.map((exam) => (
             <li key={exam.id}>
               <Card className="px-4 py-4 sm:px-6 border bg-card text-card-foreground">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-medium truncate text-primary">
                       {exam.title}
                     </h3>
-                    <p className="mt-1 text-sm text-card-foreground">
+                    <p className="mt-1 text-sm text-card-foreground sm:truncate">
                       {exam.description}
                     </p>
                   </div>
-                  <div className="ml-4">
+                  <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center space-x-2">
                     <Button
                       onClick={() => openModal(exam)}
-                      className="inline-flex items-center h-8 px-3"
+                      className="inline-flex items-center h-8 px-3 w-full sm:w-auto"
                     >
                       Start Exam
                     </Button>
+                    <Button
+                      onClick={() =>
+                        handleExamSave({
+                          userId: userId,
+                          examId: exam.id,
+                          action: savedExams[exam.id] ? "delete" : "add",
+                        })
+                      }
+                      className="h-8 w-8 flex lg:hidden"
+                      variant={"outline"}
+                      size={"icon"}
+                    >
+                      {savedExams[exam.id] ? (
+                        <Bookmark size={18} className="fill-foreground" />
+                      ) : (
+                        <Bookmark size={18} />
+                      )}
+                    </Button>
                   </div>
                 </div>
-                <div className="mt-2 sm:flex sm:justify-between">
-                  <div className="sm:flex sm:space-x-4">
-                    <p className="flex items-center text-sm text-card-foreground">
+                <div className="mt-3 flex flex-wrap items-center justify-between">
+                  <div className="flex flex-wrap sm:space-x-4">
+                    <p className="flex items-center text-sm text-card-foreground w-full sm:w-auto">
                       <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
                       {exam.duration} minutes
                     </p>
-                    <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
+                    <p className="flex items-center text-sm text-card-foreground w-full sm:w-auto mt-2 sm:mt-0">
                       <FileText className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
                       {exam.totalQuestions} questions
                     </p>
-                    <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
+                    <p className="flex items-center text-sm text-card-foreground w-full sm:w-auto mt-2 sm:mt-0">
                       <Trophy className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
                       Passing score: {exam.passingScore}%
                     </p>
                   </div>
+                  <div className="mt-3 sm:mt-0">
                   <Button
                     onClick={() =>
                       handleExamSave({
@@ -157,7 +177,7 @@ const ExamsList = ({
                         action: savedExams[exam.id] ? "delete" : "add",
                       })
                     }
-                    className="h-8 w-8"
+                    className="h-8 w-8 hidden lg:flex"
                     variant={"outline"}
                     size={"icon"}
                   >
@@ -167,6 +187,7 @@ const ExamsList = ({
                       <Bookmark size={18} />
                     )}
                   </Button>
+                  </div>
                 </div>
               </Card>
             </li>

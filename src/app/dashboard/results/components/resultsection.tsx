@@ -9,6 +9,7 @@ import {
   Lightbulb,
   MessageSquareOff,
   SquareSlash,
+  Target,
   X,
   XCircle,
 } from "lucide-react";
@@ -45,18 +46,16 @@ import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 
 type ExamResultWithExam = ExamResult & { exam: Exam };
 
-type UserwithResults = User & { exams: ExamResult[] };
-
 const ResultSection = ({
   result,
   gotQuestions,
   answersMap,
-  userWithResults,
+  user,
 }: {
   result: ExamResultWithExam;
   gotQuestions: Question[];
   answersMap: any;
-  userWithResults: UserwithResults;
+  user: User;
 }) => {
   const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -113,12 +112,13 @@ const ResultSection = ({
     ? (result.answers as any[]).filter((a) => a?.selected_option === -1).length
     : 0;
 
-  const totalTimeSpent = userWithResults.totalTimeSpent || 0;
-  const totalExamsTaken = userWithResults.totalExamsTaken || 0;
-  const totalQuestionsAttempted = userWithResults.totalQuestionsAttempted || 0;
-  const totalCorrectAnswers = userWithResults.totalCorrect || 0;
-  const totalWrongAnswers = userWithResults.totalWrong || 0;
-  const totalUnanswered = userWithResults.totalUnanswered || 0;
+  const totalTimeSpent = user.totalTimeSpent || 0;
+  const totalExamsTaken = user.totalExamsTaken || 0;
+  const totalQuestionsAttempted = user.totalQuestionsAttempted || 0;
+  const totalCorrectAnswers = user.totalCorrect || 0;
+  const totalWrongAnswers = user.totalWrong || 0;
+  const totalUnanswered = user.totalUnanswered || 0;
+  const totalAccuracy = user.totalAccuracy || 0;
 
   const examTimeSpent = result.timeSpent;
   const totalAverageTimeSpent = totalTimeSpent / totalExamsTaken;
@@ -129,10 +129,7 @@ const ResultSection = ({
     totalTimeSpent / (totalQuestionsAttempted + totalUnanswered);
 
   const examAccuracy = ((examCorrect / examAttempted) * 100).toFixed(2);
-  const totalAverageAccuracy = (
-    (totalCorrectAnswers / totalQuestionsAttempted) *
-    100
-  ).toFixed(2);
+  const totalAverageAccuracy = (totalAccuracy / totalExamsTaken).toFixed(2);
 
   return (
     <div className="w-full">
@@ -195,19 +192,25 @@ const ResultSection = ({
                   </dd>
                 </div>
                 <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-semibold">Correct Answers</dt>
+                  <dt className="text-sm lg:text-base font-semibold">
+                    Correct Answers
+                  </dt>
                   <dd className="mt-1 text-sm lg:text-base font-semibold text-green-500 sm:mt-0 sm:col-span-2">
                     {examCorrect}
                   </dd>
                 </div>
                 <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-semibold">Wrong Answers</dt>
+                  <dt className="text-sm lg:text-base font-semibold">
+                    Wrong Answers
+                  </dt>
                   <dd className="mt-1 text-sm lg:text-base font-semibold text-red-500 sm:mt-0 sm:col-span-2">
                     {examWrong}
                   </dd>
                 </div>
                 <div className="py-2 pl-2 pr-4 flex flex-row items-center justify-between sm:gap-4">
-                  <dt className="text-sm lg:text-base font-semibold">Unanswered</dt>
+                  <dt className="text-sm lg:text-base font-semibold">
+                    Unanswered
+                  </dt>
                   <dd className="mt-1 text-sm lg:text-base font-medium text-yellow-500 sm:mt-0 sm:col-span-2">
                     {examUnanswered}
                   </dd>
@@ -291,7 +294,7 @@ const ResultSection = ({
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
                     <dt className="text-sm lg:text-base font-semibold flex items-center justify-center gap-2">
                       Accuracy
-                      <CheckCheck
+                      <Target
                         className="text-foreground/80 hidden lg:block"
                         size={18}
                       />
@@ -359,7 +362,7 @@ const ResultSection = ({
       </div>
 
       <div className="overflow-hidden sm:rounded-lg">
-        <div className="px-4 py-5 sm:px-6 flex items-center justify-between">
+        <div className="px-4 py-5 sm:px-6 gap-2 flex flex-col lg:flex-row items-start lg:items-center justify-between">
           <div className="flex flex-col items-start justify-center">
             <h3 className="text-lg leading-6 font-medium">Detailed Results</h3>
             <p className="mt-1 max-w-2xl text-sm">
@@ -455,16 +458,13 @@ const ResultSection = ({
                   </div>
 
                   {!isCorrect && (
-                    <div className="mt-4  p-4 rounded-md">
-                      <div className="flex">
-                        <div className="flex-shrink-0">
-                          <BookOpen className="h-5 w-5 text-blue-400" />
-                        </div>
-                        <div className="ml-3">
+                    <div className="mt-4 p-4 rounded-md w-full max-w-full">
+                      <div className="flex flex-wrap">
+                        <div className="ml-3 w-full">
                           <h3 className="text-sm font-medium text-blue-500">
                             Explanation
                           </h3>
-                          <div className="mt-2 text-sm text-blue-500">
+                          <div className="mt-2 text-sm text-blue-500 break-words whitespace-normal">
                             <p>{question.explanation}</p>
                             {question.reference && (
                               <p className="mt-2">

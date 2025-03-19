@@ -19,6 +19,7 @@ model User {
     totalWrong              Int?                 @default(0)
     totalUnanswered         Int?                 @default(0)
     totalTimeSpent          Int?                 @default(0)
+    totalAccuracy           Float?               @default(0)
     createdAt               DateTime             @default(now())
     updatedAt               DateTime             @updatedAt
     accounts                Account[]
@@ -125,4 +126,10 @@ model BookmarkedQuestion {
     questionId String
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model RandomTable {
+    id       String @id @default(uuid())
+    titles   String
+    fuckings String
 }

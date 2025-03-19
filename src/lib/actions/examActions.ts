@@ -108,6 +108,7 @@ export async function submitExamResult(
           totalWrong: { increment: wrongAnswers },
           totalUnanswered: { increment: unanswered },
           totalTimeSpent: { increment: timeDifferenceInSeconds },
+          totalAccuracy: { increment: (correctAnswers/attemptedQuestions)*100},
         },
       });
     });

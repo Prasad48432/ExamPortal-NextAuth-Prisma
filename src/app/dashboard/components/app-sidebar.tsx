@@ -3,10 +3,15 @@
 import * as React from "react";
 import {
   AudioWaveform,
+  Bookmark,
   BookOpen,
   Bot,
+  CalendarCheck,
   ChartBar,
+  Coins,
   Command,
+  CreditCard,
+  FileQuestion,
   Frame,
   GalleryVerticalEnd,
   GitGraph,
@@ -142,19 +147,22 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Schedule exam",
       url: "#",
-      icon: Frame,
+      renderSide: false,
+      icon: CalendarCheck,
     },
     {
-      name: "Sales & Marketing",
+      name: "Access Points",
       url: "#",
-      icon: PieChart,
+      renderSide: true,
+      icon: Coins,
     },
     {
-      name: "Travel",
+      name: "Payments",
       url: "#",
-      icon: Map,
+      renderSide: false,
+      icon: CreditCard,
     },
   ],
 };
@@ -170,57 +178,45 @@ export function AppSidebar({ session }: { session: Session | null }) {
       isActive: pathname.startsWith("/dashboard/results"),
       items: [
         {
-          title: "Results",
+          title: "Results Section",
           url: "/dashboard/results",
         },
         {
           title: "Analysis",
           url: "/dashboard/results/analysis",
         },
-        {
-          title: "Settings",
-          url: "#",
-        },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
+      title: "Bookmarks",
+      url: "/dashboard/questions",
+      icon: Bookmark,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Saved Questions",
+          url: "/dashboard/bookmarks/savedquestions",
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: "Saved Exams",
+          url: "/dashboard/bookmarks/savedexams",
         },
       ],
     },
     {
-      title: "Documentation",
+      title: "Knowledge Zone",
       url: "#",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
+          title: "E-Learnings",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Video Center",
           url: "#",
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Community",
           url: "#",
         },
       ],
@@ -231,19 +227,15 @@ export function AppSidebar({ session }: { session: Session | null }) {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Profile Settings",
           url: "#",
         },
         {
-          title: "Team",
+          title: "Manage Billing",
           url: "#",
         },
         {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Ad Preferences",
           url: "#",
         },
       ],
