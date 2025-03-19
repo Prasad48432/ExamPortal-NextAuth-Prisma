@@ -75,7 +75,8 @@ export async function submitExamResult(
   attemptId: string,
   score: number,
   formattedAnswers: JsonValue,
-  passingScore: number
+  passingScore: number,
+  timeDifferenceInSeconds: number,
 ) {
   try {
     await db.examResult.update({
@@ -86,6 +87,7 @@ export async function submitExamResult(
         completedAt: new Date().toISOString(),
         status: "completed",
         examPassed: score >= passingScore,
+        timeSpent: timeDifferenceInSeconds,
       },
     });
 

@@ -1,5 +1,11 @@
 "use client";
-import { BookOpen, CheckCircle, ChevronLeft, XCircle } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle,
+  ChevronLeft,
+  Lightbulb,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import type { ExamResult, Exam, Question } from "@prisma/client";
@@ -28,6 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatTime } from "@/lib/utils/timeFomat";
+import {
+  getExamFeedback,
+  getFeedbackColor,
+  getQuestionFeedback,
+} from "../helpers/resultHelpers";
 
 type ExamResultWithExam = ExamResult & { exam: Exam };
 
@@ -99,84 +111,94 @@ const ResultSection = ({
 
       <div className="w-full px-4 py-5 sm:px-6 flex flex-col lg:flex-row gap-4 items-center justify-center">
         <Card className="w-full lg:min-h-[415px] lg:w-1/2 border bg-card text-card-foreground shadow">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-base lg:text-lg leading-6 font-medium text-primary">
+          <CardHeader>
+            <CardTitle className="text-base lg:text-lg leading-none">
               Result Summary
-            </h3>
-            <p className="mt-1 max-w-2xl text-xs lg:text-sm">
-              Completed on:{" "}
-              <span className="text-foreground/80">
-                {result.completedAt
-                  ? new Date(result.completedAt).toLocaleString()
-                  : "Not completed"}
-              </span>
-            </p>
-            <p className="mt-1 max-w-2xl text-xs lg:text-sm">
-              Attempt id:{" "}
-              <span className="text-foreground/80">{result.id}</span>
-            </p>
-          </div>
-          <div className="border-t  px-4 py-5 sm:p-0">
-            <dl className="sm:divide-y">
-              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
-                <dt className="text-sm lg:text-base font-medium ">Score</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <ScoreBadge score={result.score} passed={result.examPassed} />
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
-                <dt className="text-sm lg:text-base font-medium">Status</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <ExamStatusBadge
-                    passed={result.examPassed}
-                  />
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
-                <dt className="text-sm lg:text-base font-medium">
-                  Correct Answers
-                </dt>
-                <dd className="mt-1 text-sm lg:text-base font-medium text-green-500 sm:mt-0 sm:col-span-2">
-                  {Array.isArray(result.answers)
-                    ? (result.answers as any[]).filter((a) => a?.is_correct)
-                        .length
-                    : 0}
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
-                <dt className="text-sm lg:text-base font-medium">
-                  Wrong Answers
-                </dt>
-                <dd className="mt-1 text-sm lg:text-base font-medium text-red-500 sm:mt-0 sm:col-span-2">
-                  {Array.isArray(result.answers)
-                    ? (result.answers as any[]).filter(
-                        (a) => !a?.is_correct && a?.selected_option !== -1
-                      ).length
-                    : 0}
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4 sm:px-6">
-                <dt className="text-sm lg:text-base font-medium">Unanswered</dt>
-                <dd className="mt-1 text-sm lg:text-base font-medium text-yellow-500 sm:mt-0 sm:col-span-2">
-                  {Array.isArray(result.answers)
-                    ? (result.answers as any[]).filter(
-                        (a) => a?.selected_option === -1
-                      ).length
-                    : 0}
-                </dd>
-              </div>
-            </dl>
-          </div>
+            </CardTitle>
+            <CardDescription className="leading-none">
+              {" "}
+              <p className="max-w-2xl text-xs lg:text-sm">
+                Completed on:{" "}
+                <span className="text-foreground/80">
+                  {result.completedAt
+                    ? new Date(result.completedAt).toLocaleString()
+                    : "Not completed"}
+                </span>
+              </p>
+              <p className="mt-1 max-w-2xl text-xs lg:text-sm">
+                Attempt id:{" "}
+                <span className="text-foreground/80">{result.id}</span>
+              </p>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="border-t  px-4 py-5 sm:p-0">
+              <dl className="sm:divide-y">
+                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-medium ">Score</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    <ScoreBadge
+                      score={result.score}
+                      passed={result.examPassed}
+                    />
+                  </dd>
+                </div>
+                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-medium">Status</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    <ExamStatusBadge passed={result.examPassed} />
+                  </dd>
+                </div>
+                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-medium">
+                    Correct Answers
+                  </dt>
+                  <dd className="mt-1 text-sm lg:text-base font-medium text-green-500 sm:mt-0 sm:col-span-2">
+                    {Array.isArray(result.answers)
+                      ? (result.answers as any[]).filter((a) => a?.is_correct)
+                          .length
+                      : 0}
+                  </dd>
+                </div>
+                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-medium">
+                    Wrong Answers
+                  </dt>
+                  <dd className="mt-1 text-sm lg:text-base font-medium text-red-500 sm:mt-0 sm:col-span-2">
+                    {Array.isArray(result.answers)
+                      ? (result.answers as any[]).filter(
+                          (a) => !a?.is_correct && a?.selected_option !== -1
+                        ).length
+                      : 0}
+                  </dd>
+                </div>
+                <div className="py-4 sm:py-5 flex flex-row items-center justify-between sm:gap-4">
+                  <dt className="text-sm lg:text-base font-medium">
+                    Unanswered
+                  </dt>
+                  <dd className="mt-1 text-sm lg:text-base font-medium text-yellow-500 sm:mt-0 sm:col-span-2">
+                    {Array.isArray(result.answers)
+                      ? (result.answers as any[]).filter(
+                          (a) => a?.selected_option === -1
+                        ).length
+                      : 0}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </CardContent>
         </Card>
         <Card className="w-full lg:min-h-[415px] lg:w-1/2 border bg-card text-card-foreground shadow">
           <CardHeader>
-            <CardTitle className="text-base lg:text-lg">
-              Bar Chart - Multiple
+            <CardTitle className="text-base lg:text-lg leading-none">
+              Detailed Analysis
             </CardTitle>
-            <CardDescription>January - June 2024</CardDescription>
+            <CardDescription className="leading-none">
+              Exam analysis on every aspect
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig}>
+            {/* <ChartContainer config={chartConfig}>
               <RadarChart data={chartData}>
                 <ChartTooltip
                   cursor={false}
@@ -191,7 +213,67 @@ const ResultSection = ({
                 />
                 <Radar dataKey="mobile" fill="var(--color-mobile)" />
               </RadarChart>
-            </ChartContainer>
+            </ChartContainer> */}
+            <div className="border-t  px-4 py-5 sm:p-0">
+              <dl className="sm:divide-y">
+                <div className="py-4 sm:py-5 flex flex-col sm:gap-2">
+                  <div className="flex flex-row items-center justify-between">
+                    <dt className="text-sm lg:text-base font-medium">
+                      Total time spent
+                    </dt>
+                    <dd
+                      className={`${getFeedbackColor(
+                        result.exam.duration,
+                        result.timeSpent
+                      )} text-sm font-semibold`}
+                    >
+                      {formatTime(result.timeSpent)}
+                    </dd>
+                  </div>
+                  <div
+                    className="mt-3 flex items-center justify-center gap-1 p-2 rounded-md 
+                  bg-yellow-100 text-yellow-800 
+                  dark:bg-yellow-900 dark:text-yellow-300"
+                  >
+                    <Lightbulb size={17} className="mt-[2px]" />
+                    <span className="text-xs">
+                      {getExamFeedback(result.exam.duration, result.timeSpent)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="py-4 sm:py-5 flex flex-col sm:gap-2">
+                  <div className="flex flex-row items-center justify-between">
+                    <dt className="text-sm lg:text-base font-medium">
+                      Time per question
+                    </dt>
+                    <dd
+                      className={`${getFeedbackColor(
+                        result.exam.duration / result.exam.totalQuestions,
+                        result.timeSpent / result.exam.totalQuestions
+                      )} text-sm font-semibold`}
+                    >
+                      {formatTime(
+                        result.timeSpent / result.exam.totalQuestions
+                      )}
+                    </dd>
+                  </div>
+                  <div
+                    className="mt-3 flex items-center justify-center gap-1 p-2 rounded-md 
+                  bg-yellow-100 text-yellow-800 
+                  dark:bg-yellow-900 dark:text-yellow-300"
+                  >
+                    <Lightbulb size={17} className="mt-[2px]" />
+                    <span className="text-xs">
+                      {getQuestionFeedback(
+                        result.exam.duration / result.exam.totalQuestions,
+                        result.timeSpent / result.exam.totalQuestions
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </dl>
+            </div>
           </CardContent>
         </Card>
       </div>

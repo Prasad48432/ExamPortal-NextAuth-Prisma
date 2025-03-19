@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import SavedExams from "./components/savedExams";
 
 const HomePage = async () => {
   const session = await auth();
@@ -254,66 +255,15 @@ const HomePage = async () => {
           <CardFooter className="justify-end">
             <Link
               href={`/dashboard/results`}
-              className="hover:underline flex items-center justify-center"
+              className="flex items-center justify-center"
             >
-              View all <ChevronRight size={18} strokeWidth={1} />
+              <Button variant={"link"}>
+                View all <ChevronRight size={18} strokeWidth={1} />
+              </Button>
             </Link>
           </CardFooter>
         </Card>
-        <Card className="border bg-sidebar/80 text-card-foreground shadow">
-          <CardHeader>
-            <CardTitle className="text-lg leading-none">
-              Exam savelist
-            </CardTitle>
-            <CardDescription className="leading-none">
-              Your saved exams list.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center w-full divide-y divide-border">
-              {savedExams.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <h1 className="text-xl font-semibold text-foreground/60">
-                    Nothing saved yet.
-                  </h1>
-                  <Link href={"/exams"}>
-                    <Button className="h-8 px-3">
-                      Bookmark avaialble exams
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                savedExams.slice(0, 3).map((savedexam) => (
-                  <div className="w-full py-2" key={savedexam.id}>
-                    <Link href={`/exams`} className="block w-full">
-                      <div className="flex items-center justify-between w-full">
-                        <p className="text-sm lg:text-base font-medium truncate">
-                          {savedexam.exam?.title}
-                        </p>
-                        <div className="ml-2 flex-shrink-0 flex">
-                          <p>Start Now</p>
-                        </div>
-                      </div>
-                      <div className="mt-1 sm:flex sm:justify-between">
-                        <p className="text-xs lg:text-sm font-medium truncate text-foreground/70">
-                          {savedexam.exam?.description}
-                        </p>
-                      </div>
-                    </Link>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="justify-end">
-            <Link
-              href={`/dashboard/results`}
-              className="hover:underline flex items-center justify-center"
-            >
-              View all <ChevronRight size={18} strokeWidth={1} />
-            </Link>
-          </CardFooter>
-        </Card>
+        <SavedExams savedExams={savedExams} userId={session?.user?.id || ""} />
       </div>
     </div>
   );

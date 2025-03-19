@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import BreadcrumbDynamic from "./components/breadcrumb";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface DashboardProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ export default async function Dashboard({ children }: DashboardProps) {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <BreadcrumbDynamic/>
+            <ThemeToggle />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

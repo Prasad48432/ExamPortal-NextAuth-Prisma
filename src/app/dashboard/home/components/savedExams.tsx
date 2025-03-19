@@ -1,52 +1,44 @@
 "use client";
+
 import {
-  AlertCircle,
-  Bookmark,
-  Clock,
-  FileText,
-  TrendingUp,
-  Trophy,
-  Users,
-} from "lucide-react";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import React, { useState } from "react";
-import { Card } from "@/components/ui/card";
+import type { Exam, SavedExam } from "@prisma/client";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AlertCircle, ChevronRight, Clock } from "lucide-react";
+import { startExam } from "@/lib/questionActions";
+import { redirect } from "next/navigation";
+import { ToastError } from "@/components/toast";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
   DialogOverlay,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import type { Exam, SavedExam } from "@prisma/client";
-import { startExam } from "@/lib/questionActions";
-import { ToastError, ToastSuccess } from "@/components/toast";
-import { redirect } from "next/navigation";
-import { saveExam } from "@/lib/actions/examActions";
 
-type ExamWithSavedBy = Exam & {
-  savedBy: SavedExam[];
+type SavedExamWithExam = SavedExam & {
+  exam: Exam;
 };
 
-const ExamsList = ({
-  exams,
+const SavedExams = ({
+  savedExams,
   userId,
 }: {
-  exams: ExamWithSavedBy[];
+  savedExams: SavedExamWithExam[];
   userId: string;
 }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [savedExams, setSavedExams] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(
-      exams.map((exam) => [
-        exam.id,
-        exam.savedBy.some((saved) => saved.userId === userId),
-      ])
-    )
-  );
 
   const openModal = (exam: Exam) => {
     setSelectedExam(exam);
@@ -78,101 +70,69 @@ const ExamsList = ({
     }
   };
 
-  const handleExamSave = async ({
-    userId,
-    examId,
-    action,
-  }: {
-    userId: string;
-    examId: string;
-    action: string;
-  }) => {
-    const response = await saveExam(userId, examId, action);
-    if (response.success) {
-      if (action === "add") {
-        setSavedExams((prev) => ({
-          ...prev,
-          [examId]: !prev[examId],
-        }));
-      } else if (action === "delete") {
-        setSavedExams((prev) => ({
-          ...prev,
-          [examId]: !prev[examId],
-        }));
-      }
-    } else {
-      ToastError({ message: "Error saving exam" });
-    }
-  };
-
   return (
-    <div className="flex-1">
-      <div>
-        <div className="flex items-center space-x-2 mb-8 text-lightprimary-text dark:text-primary-text">
-          <TrendingUp className="w-5 h-5" />
-          <span className="font-semibold">Trending on Exam portal</span>
-        </div>
-        <ul className="space-y-3">
-          {exams.map((exam) => (
-            <li key={exam.id}>
-              <Card className="px-4 py-4 sm:px-6 border bg-card text-card-foreground">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-medium truncate text-primary">
-                      {exam.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-card-foreground">
-                      {exam.description}
-                    </p>
-                  </div>
-                  <div className="ml-4">
-                    <Button
-                      onClick={() => openModal(exam)}
-                      className="inline-flex items-center h-8 px-3"
-                    >
-                      Start Exam
-                    </Button>
+    <>
+      <Card className="border bg-sidebar/80 text-card-foreground shadow">
+        <CardHeader>
+          <CardTitle className="text-lg leading-none">Exam savelist</CardTitle>
+          <CardDescription className="leading-none">
+            Your saved exams list.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center w-full divide-y divide-border">
+            {savedExams.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3">
+                <h1 className="text-xl font-semibold text-foreground/60">
+                  Nothing saved yet.
+                </h1>
+                <Link href={"/exams"}>
+                  <Button className="h-8 px-3">Bookmark avaialble exams</Button>
+                </Link>
+              </div>
+            ) : (
+              savedExams.slice(0, 3).map((savedexam) => (
+                <div className="w-full py-2" key={savedexam.id}>
+                  <div className="block w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-sm lg:text-base font-medium truncate">
+                        {savedexam.exam?.title}
+                      </p>
+                      <div className="ml-2 flex-shrink-0 flex">
+                        <Button
+                          onClick={() => openModal(savedexam.exam)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Start Now
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-1 sm:flex sm:justify-between">
+                      <p className="text-xs lg:text-sm font-medium max-w-[80%] truncate text-foreground/70">
+                        {savedexam.exam?.description}
+                      </p>
+                      <p className="flex items-center justify-center text-xs text-card-foreground">
+                        <Clock className="flex-shrink-0 mr-1 h-3 w-3 text-primary" />
+                        {savedexam.exam.duration} minutes
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-2 sm:flex sm:justify-between">
-                  <div className="sm:flex sm:space-x-4">
-                    <p className="flex items-center text-sm text-card-foreground">
-                      <Clock className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
-                      {exam.duration} minutes
-                    </p>
-                    <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
-                      <FileText className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
-                      {exam.totalQuestions} questions
-                    </p>
-                    <p className="mt-2 flex items-center text-sm text-card-foreground sm:mt-0">
-                      <Trophy className="flex-shrink-0 mr-1.5 h-4 w-4 text-primary" />
-                      Passing score: {exam.passingScore}%
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() =>
-                      handleExamSave({
-                        userId: userId,
-                        examId: exam.id,
-                        action: savedExams[exam.id] ? "delete" : "add",
-                      })
-                    }
-                    className="h-8 w-8"
-                    variant={"outline"}
-                    size={"icon"}
-                  >
-                    {savedExams[exam.id] ? (
-                      <Bookmark size={18} className="fill-foreground" />
-                    ) : (
-                      <Bookmark size={18} />
-                    )}
-                  </Button>
-                </div>
-              </Card>
-            </li>
-          ))}
-        </ul>
-      </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="justify-end">
+          <Link
+            href={`/dashboard/results`}
+            className="flex items-center justify-center"
+          >
+            <Button variant={"link"}>
+              View all <ChevronRight size={18} strokeWidth={1} />
+            </Button>
+          </Link>
+        </CardFooter>
+      </Card>
       {selectedExam && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className="bg-muted/40" />
@@ -259,8 +219,8 @@ const ExamsList = ({
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </>
   );
 };
 
-export default ExamsList;
+export default SavedExams;

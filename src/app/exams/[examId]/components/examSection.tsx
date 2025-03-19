@@ -82,11 +82,19 @@ const ExamSection = ({
         is_correct: answers[question.id] === question.correctAnswer,
       }));
 
+      const startedAt = attempt.startedAt ? new Date(attempt.startedAt) : null;
+      const now = new Date();
+
+      const timeDifferenceInSeconds = startedAt 
+        ? Math.floor((now.getTime() - startedAt.getTime()) / 1000) 
+        : 0;
+
       const result = await submitExamResult(
         attempt.id,
         score,
         formattedAnswers,
-        examDetails.passingScore
+        examDetails.passingScore,
+        timeDifferenceInSeconds,
       );
       if (!result.success) throw new Error("error submitting");
 
