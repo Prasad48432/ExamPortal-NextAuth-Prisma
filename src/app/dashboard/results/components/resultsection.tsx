@@ -328,7 +328,7 @@ const ResultSection = ({
                       <p className={`text-chart-fail`}>{examWrong}</p>
                       <p>/</p>
                       <p className="text-foreground flex items-center justify-center gap-2">
-                        {totalWrongAnswers / totalExamsTaken}
+                        {(totalWrongAnswers / totalExamsTaken).toFixed(2)}
                         <InfoPopover text="Average no of wrong answers per exam" />
                       </p>
                     </span>
@@ -349,7 +349,7 @@ const ResultSection = ({
                       </p>
                       <p>/</p>
                       <p className="text-foreground flex items-center justify-center gap-2">
-                        {totalUnanswered / totalExamsTaken}
+                        {(totalUnanswered / totalExamsTaken).toFixed(2)}
                         <InfoPopover text="Average no of unanswered questions per exam" />
                       </p>
                     </span>

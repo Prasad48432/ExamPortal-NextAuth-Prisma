@@ -1,10 +1,13 @@
 "use client";
-import { ToastError } from "@/components/toast";
+import { ToastError, ToastSuccess } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { saveExam } from "@/lib/actions/examActions";
+import { startExam } from "@/lib/questionActions";
 import type { Exam, SavedExam } from "@prisma/client";
-import { Clock, Delete, FileText, Trash, Trophy } from "lucide-react";
+import { AlertCircle, Clock, Delete, FileText, Trash, Trophy } from "lucide-react";
+import { redirect } from "next/navigation";
 import React, { useState } from "react";
 
 type Exams = SavedExam & {
@@ -53,7 +56,29 @@ const SavedExamList = ({
     setSelectedExam(null);
   };
 
+   const handleStartExam = async ({
+      userId,
+      examId,
+    }: {
+      userId: string;
+      examId: string;
+    }) => {
+      setLoading(true);
+      const response = await startExam(userId, examId);
+  
+      if (response.success) {
+        const response2 = await saveExam(userId, examId, "delete");
+        setLoading(false);
+        closeModal();
+        redirect(`/exams/${examId}?attemptId=${response.examResult?.id}`);
+      } else {
+        ToastError({ message: response.message || "error" });
+        setLoading(false);
+      }
+    };
+
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
       {savedExams.map((exam) => (
         <div key={exam.id} className="col-span-1">
@@ -131,6 +156,93 @@ const SavedExamList = ({
         </div>
       ))}
     </div>
+    {selectedExam && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogOverlay className="bg-muted/40" />
+          <DialogContent className="gap-1">
+            <DialogHeader>
+              <DialogTitle>{selectedExam.title}</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm mb-4">{selectedExam.description}</p>
+            <div className="border-l-4 border-yellow-400 dark:border-yellow-800 py-2 px-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-yellow-400 dark:text-yellow-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+                    Important Instructions
+                  </h3>
+                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-500">
+                    <ul className="list-disc pl-1 space-y-1">
+                      <li>The exam will be conducted in full-screen mode</li>
+                      <li>
+                        Switching tabs or minimizing the window will trigger a
+                        warning
+                      </li>
+                      <li>
+                        Multiple violations will result in automatic submission
+                      </li>
+                      <li>Ensure you have a stable internet connection</li>
+                      <li>
+                        You have {selectedExam.duration} minutes to complete the
+                        exam
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                className="h-8 px-3"
+                variant="secondary"
+                onClick={closeModal}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="h-8 px-3"
+                disabled={loading}
+                onClick={() =>
+                  handleStartExam({ userId: userId, examId: selectedExam.id })
+                }
+              >
+                {loading ? (
+                  <>
+                    <span>
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    </span>
+                    Starting...
+                  </>
+                ) : (
+                  "Start"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

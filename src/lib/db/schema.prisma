@@ -124,12 +124,7 @@ model BookmarkedQuestion {
     id         String   @id @default(uuid())
     userId     String
     questionId String
+    examId     String   @default("exam")
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-}
-
-model RandomTable {
-    id       String @id @default(uuid())
-    titles   String
-    fuckings String
 }

@@ -142,3 +142,29 @@ export async function saveExam(userId: string, examId: string, action: string) {
     return { success: false };
   }
 }
+
+export async function saveQuestion(userId: string, questionId: string, examId: string, action: string){
+  try {
+    if (action === "add") {
+      await db.bookmarkedQuestion.create({
+        data: {
+          userId: userId,
+          questionId: questionId,
+          examId: examId,
+        },
+      });
+    } else if (action == "delete") {
+      await db.bookmarkedQuestion.deleteMany({
+        where: {
+          userId: userId,
+          questionId: questionId,
+          examId: examId,
+        },
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}

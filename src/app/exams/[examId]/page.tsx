@@ -70,6 +70,13 @@ export default async function Page(props: {
     questions = storedQuestions as unknown as Question[];
   }
 
+  const bookmarkedQuestions = await db.bookmarkedQuestion.findMany({
+    where: {
+      userId: attempt.data.userId,
+      examId: attempt.data.examId
+    }
+  })
+
   return (
     <div>
       <ExamSection
@@ -77,6 +84,7 @@ export default async function Page(props: {
         examDetails={exam.data as Exam}
         attempt={attempt.data as ExamResult}
         userEmail={session.user?.email || ""}
+        bookmarkedQuestions={bookmarkedQuestions}
       />
     </div>
   );

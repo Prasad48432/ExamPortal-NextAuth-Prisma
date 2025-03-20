@@ -1,10 +1,13 @@
 "use client";
-import { Exam, ExamResult, Question } from "@prisma/client";
+import { BookmarkedQuestion, Exam, ExamResult, Question } from "@prisma/client";
 import {
   AlertCircle,
+  Bookmark,
+  Check,
   ChevronRight,
   CircleCheck,
   Clock,
+  Loader2,
   Maximize,
   Minimize,
   Settings,
@@ -17,12 +20,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import {
+  saveQuestion,
   submitExamResult,
   validateSecurityCheck,
 } from "@/lib/actions/examActions";
 import { useRouter } from "next/navigation";
 import useCountdown from "@/hooks/useCountdown";
-import { ToastError } from "@/components/toast";
+import { ToastError, ToastSuccess } from "@/components/toast";
 import {
   Dialog,
   DialogContent,
@@ -31,17 +35,25 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ExamSection = ({
   lockQuestions,
   examDetails,
   attempt,
   userEmail,
+  bookmarkedQuestions,
 }: {
   lockQuestions: Question[];
   examDetails: Exam;
   attempt: ExamResult;
   userEmail: string;
+  bookmarkedQuestions: BookmarkedQuestion[];
 }) => {
   const [questions, setQuestions] = useState<Question[]>(lockQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -51,6 +63,29 @@ const ExamSection = ({
   const { exitFullScreen, isFullScreen, enterFullScreen } = useFullScreen();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookmarkLoading, setBookMarkLoading] = useState(false);
+  const [localBookmarkedQuestions, setLocalBookmarkedQuestions] =
+    useState<BookmarkedQuestion[]>(bookmarkedQuestions);
+
+  const addBookmark = async (
+    userId: string,
+    questionId: string,
+    examId: string,
+    action: string
+  ) => {
+    setBookMarkLoading(true); // Show loading state
+
+    const response = await saveQuestion(userId, questionId, examId, action);
+
+    if (response.success) {
+      setLocalBookmarkedQuestions((prev) => [
+        ...prev,
+        { id: questionId, userId, questionId, examId },
+      ]);
+    }
+
+    setBookMarkLoading(false);
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -75,11 +110,10 @@ const ExamSection = ({
         (q) => answers[q.id] === q.correctAnswer
       ).length;
 
-      const unanswered = Object.keys(questions).length -
-      Object.keys(answers).length;
+      const unanswered =
+        Object.keys(questions).length - Object.keys(answers).length;
 
-      const wrongAnswers = questions.length - (correctAnswers+unanswered);
-
+      const wrongAnswers = questions.length - (correctAnswers + unanswered);
 
       const score = Math.round((correctAnswers / questions.length) * 100);
       const formattedAnswers = questions.map((question) => ({
@@ -91,8 +125,8 @@ const ExamSection = ({
       const startedAt = attempt.startedAt ? new Date(attempt.startedAt) : null;
       const now = new Date();
 
-      const timeDifferenceInSeconds = startedAt 
-        ? Math.floor((now.getTime() - startedAt.getTime()) / 1000) 
+      const timeDifferenceInSeconds = startedAt
+        ? Math.floor((now.getTime() - startedAt.getTime()) / 1000)
         : 0;
 
       const result = await submitExamResult(
@@ -102,7 +136,7 @@ const ExamSection = ({
         examDetails.passingScore,
         timeDifferenceInSeconds,
         attempt.userId,
-        correctAnswers+wrongAnswers,
+        correctAnswers + wrongAnswers,
         correctAnswers,
         wrongAnswers,
         unanswered
@@ -175,6 +209,9 @@ const ExamSection = ({
   };
 
   const currentQuestion = questions[currentQuestionIndex];
+  const isBookmarked = localBookmarkedQuestions.some(
+    (bq) => bq.questionId === currentQuestion.id
+  );
 
   const handleSecurityCheck = async () => {
     const result = await validateSecurityCheck(attempt.id);
@@ -347,9 +384,13 @@ const ExamSection = ({
                     {currentQuestion.questionText}
                   </h4>
                   {currentQuestion.questionImage && (
-                    <img
+                    <Image
                       className="my-4 w-[60%] object-cover"
                       src={currentQuestion.questionImage}
+                      alt="Question Image"
+                      width={600}
+                      height={400}
+                      layout="responsive"
                     />
                   )}
                   <div className="space-y-3 select-none">
@@ -375,6 +416,39 @@ const ExamSection = ({
                     ))}
                   </div>
                 </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={() => {
+                          if (!isBookmarked) {
+                            addBookmark(
+                              attempt.userId,
+                              currentQuestion.id,
+                              attempt.examId,
+                              "add"
+                            );
+                          }
+                        }}
+                        className="mb-auto"
+                        size={"icon"}
+                        variant={"outline"}
+                        disabled={isBookmarked || bookmarkLoading}
+                      >
+                        {bookmarkLoading ? (
+                          <Loader2 className="animate-spin" />
+                        ) : isBookmarked ? (
+                          <Check className="text-chart-success" />
+                        ) : (
+                          <Bookmark />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add to bookmark</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
 
               <div className="flex justify-between select-none">

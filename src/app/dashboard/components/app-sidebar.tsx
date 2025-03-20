@@ -191,6 +191,7 @@ export function AppSidebar({ session }: { session: Session | null }) {
       title: "Bookmarks",
       url: "/dashboard/questions",
       icon: Bookmark,
+      isActive: pathname.startsWith("/dashboard/bookmarks"),
       items: [
         {
           title: "Saved Questions",
