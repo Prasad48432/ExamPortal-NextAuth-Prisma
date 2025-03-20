@@ -25,7 +25,7 @@ function decodeIdToken(id_token: string) {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter,
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
