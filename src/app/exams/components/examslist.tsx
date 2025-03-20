@@ -25,8 +25,6 @@ import { startExam } from "@/lib/questionActions";
 import { ToastError, ToastSuccess } from "@/components/toast";
 import { redirect } from "next/navigation";
 import { saveExam } from "@/lib/actions/examActions";
-import { Session } from "next-auth";
-import { useRouter } from "next/navigation";
 
 type ExamWithSavedBy = Exam & {
   savedBy: SavedExam[];
@@ -35,11 +33,9 @@ type ExamWithSavedBy = Exam & {
 const ExamsList = ({
   exams,
   userId,
-  session,
 }: {
   exams: ExamWithSavedBy[];
   userId: string;
-  session: Session | null;
 }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,8 +48,6 @@ const ExamsList = ({
       ])
     )
   );
-
-  const router = useRouter();
 
   const openModal = (exam: Exam) => {
     setSelectedExam(exam);
@@ -248,16 +242,12 @@ const ExamsList = ({
               <Button
                 className="h-8 px-3"
                 disabled={loading}
-                onClick={() => {
-                  if (session) {
-                    handleStartExam({
-                      userId: userId,
-                      examId: selectedExam.id,
-                    });
-                  } else {
-                    router.push("/sign-in");
-                  }
-                }}
+                onClick={() =>
+                  handleStartExam({
+                    userId: userId,
+                    examId: selectedExam.id,
+                  })
+                }
               >
                 {loading ? (
                   <>
