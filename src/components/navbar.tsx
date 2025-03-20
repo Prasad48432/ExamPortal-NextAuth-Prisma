@@ -64,44 +64,12 @@ const Navbar = ({ session }: { session: any }) => {
                       <a
                         className="group/menu-item flex items-center text-sm hover:text-lightaccent-selection dark:hover:text-accent-text  select-none gap-3 rounded-md p-2 leading-none no-underline outline-none focus-visible:ring-2 focus-visible:ring-accent-text-lighter group-hover:bg-transparent text-accent-text focus-visible:text-accent-text"
                         data-radix-collection-item=""
-                        href="/docs"
-                      >
-                        <div className="flex flex-col justify-center">
-                          <div className="flex items-center gap-1">
-                            <p className="group/underline leading-snug text-lightprimary-text dark:text-primary-text group-hover/menu-item:text-lightaccent-selection dark:group-hover/menu-item:text-accent-text">
-                              Pricing
-                              <span className="block max-w-0 group-hover/underline:max-w-full transition-all duration-500 h-0.5 bg-foreground"></span>
-                            </p>
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                    <li className="text-sm font-medium">
-                      <a
-                        className="group/menu-item flex items-center text-sm hover:text-lightaccent-selection dark:hover:text-accent-text  select-none gap-3 rounded-md p-2 leading-none no-underline outline-none focus-visible:ring-2 focus-visible:ring-accent-text-lighter group-hover:bg-transparent text-accent-text focus-visible:text-accent-text"
-                        data-radix-collection-item=""
                         href="/exams"
                       >
                         <div className="flex flex-col justify-center">
                           <div className="flex items-center gap-1">
                             <p className="group/underline leading-snug text-lightprimary-text dark:text-primary-text group-hover/menu-item:text-lightaccent-selection dark:group-hover/menu-item:text-accent-text">
                               Exams
-                              <span className="block max-w-0 group-hover/underline:max-w-full transition-all duration-300 h-0.5 bg-foreground"></span>
-                            </p>
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                    <li className="text-sm font-medium">
-                      <a
-                        className="group/menu-item flex items-center text-sm hover:text-lightaccent-selection dark:hover:text-accent-text  select-none gap-3 rounded-md p-2 leading-none no-underline outline-none focus-visible:ring-2 focus-visible:ring-accent-text-lighter group-hover:bg-transparent text-accent-text focus-visible:text-accent-text"
-                        data-radix-collection-item=""
-                        href="/results"
-                      >
-                        <div className="flex flex-col justify-center">
-                          <div className="flex items-center gap-1">
-                            <p className="group/underline leading-snug text-lightprimary-text dark:text-primary-text group-hover/menu-item:text-lightaccent-selection dark:group-hover/menu-item:text-accent-text">
-                              Results
                               <span className="block max-w-0 group-hover/underline:max-w-full transition-all duration-300 h-0.5 bg-foreground"></span>
                             </p>
                           </div>

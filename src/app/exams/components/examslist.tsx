@@ -25,6 +25,8 @@ import { startExam } from "@/lib/questionActions";
 import { ToastError, ToastSuccess } from "@/components/toast";
 import { redirect } from "next/navigation";
 import { saveExam } from "@/lib/actions/examActions";
+import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
 type ExamWithSavedBy = Exam & {
   savedBy: SavedExam[];
@@ -33,9 +35,11 @@ type ExamWithSavedBy = Exam & {
 const ExamsList = ({
   exams,
   userId,
+  session,
 }: {
   exams: ExamWithSavedBy[];
   userId: string;
+  session: Session | null;
 }) => {
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +52,8 @@ const ExamsList = ({
       ])
     )
   );
+
+  const router = useRouter();
 
   const openModal = (exam: Exam) => {
     setSelectedExam(exam);
@@ -169,24 +175,24 @@ const ExamsList = ({
                     </p>
                   </div>
                   <div className="mt-3 sm:mt-0">
-                  <Button
-                    onClick={() =>
-                      handleExamSave({
-                        userId: userId,
-                        examId: exam.id,
-                        action: savedExams[exam.id] ? "delete" : "add",
-                      })
-                    }
-                    className="h-8 w-8 hidden lg:flex"
-                    variant={"outline"}
-                    size={"icon"}
-                  >
-                    {savedExams[exam.id] ? (
-                      <Bookmark size={18} className="fill-foreground" />
-                    ) : (
-                      <Bookmark size={18} />
-                    )}
-                  </Button>
+                    <Button
+                      onClick={() =>
+                        handleExamSave({
+                          userId: userId,
+                          examId: exam.id,
+                          action: savedExams[exam.id] ? "delete" : "add",
+                        })
+                      }
+                      className="h-8 w-8 hidden lg:flex"
+                      variant={"outline"}
+                      size={"icon"}
+                    >
+                      {savedExams[exam.id] ? (
+                        <Bookmark size={18} className="fill-foreground" />
+                      ) : (
+                        <Bookmark size={18} />
+                      )}
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -242,9 +248,16 @@ const ExamsList = ({
               <Button
                 className="h-8 px-3"
                 disabled={loading}
-                onClick={() =>
-                  handleStartExam({ userId: userId, examId: selectedExam.id })
-                }
+                onClick={() => {
+                  if (session) {
+                    handleStartExam({
+                      userId: userId,
+                      examId: selectedExam.id,
+                    });
+                  } else {
+                    router.push("/sign-in");
+                  }
+                }}
               >
                 {loading ? (
                   <>
