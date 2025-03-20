@@ -11,9 +11,7 @@ import {
   Maximize,
   Minimize,
   Settings,
-  Trophy,
   WifiHigh,
-  X,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,7 +24,7 @@ import {
 } from "@/lib/actions/examActions";
 import { useRouter } from "next/navigation";
 import useCountdown from "@/hooks/useCountdown";
-import { ToastError, ToastSuccess } from "@/components/toast";
+import { ToastError } from "@/components/toast";
 import {
   Dialog,
   DialogContent,

@@ -80,26 +80,22 @@ const SavedQuestionList = ({
               />
             )}
 
-            {/* Options mapping */}
             <div className="space-y-2">
               {question.question.options.map((option, optIndex) => {
                 const isCorrect = optIndex === question.question.correctAnswer;
 
                 return (
                   <div key={optIndex} className="flex items-center">
-                    {/* Fake Radio Button */}
                     <div
                       className={`relative w-4 h-4 rounded-full border-2 ${
                         isCorrect ? "border-green-500" : "border-gray-400"
                       } flex items-center justify-center`}
                     >
-                      {/* Inner Circle for Selected Option */}
                       {isCorrect && (
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       )}
                     </div>
 
-                    {/* Option Label */}
                     <label
                       className={`ml-2 text-sm font-medium ${
                         isCorrect ? "text-green-500" : "text-foreground/80"

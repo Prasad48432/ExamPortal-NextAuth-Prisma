@@ -87,6 +87,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   pages: {
-    verifyRequest: "/linksent", // Change this to your desired page
+    verifyRequest: "/linksent",
   },
 });
