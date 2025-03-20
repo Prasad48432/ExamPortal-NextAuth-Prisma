@@ -1,0 +1,1 @@
+in dashboard home page fix average accuracy NaN value

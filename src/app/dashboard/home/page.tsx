@@ -150,10 +150,12 @@ const HomePage = async () => {
                   </dt>
                   <dd>
                     <div className="text-base font-medium text-primary">
-                      {(
-                        (user?.totalAccuracy ?? 0) /
-                        (user?.totalExamsTaken ?? 1)
-                      ).toFixed(2)}
+                      {user?.totalAccuracy === 0 && user?.totalExamsTaken === 0
+                        ? "N/A"
+                        : (
+                            (user?.totalAccuracy ?? 0) /
+                            (user?.totalExamsTaken || 1)
+                          ).toFixed(2)}
                     </div>
                   </dd>
                 </dl>
