@@ -4,7 +4,7 @@ import { encode as defaultEncode } from "next-auth/jwt";
 import db from "@/lib/db/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 
 const adapter = PrismaAdapter(db);
@@ -27,8 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter,
   secret: process.env.AUTH_SECRET,
   providers: [
-    Google,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Resend({
+      apiKey: process.env.RESEND_AUTH_KEY,
       from: "onboarding@linkfolio.space",
     }),
   ],

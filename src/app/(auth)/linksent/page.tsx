@@ -26,7 +26,7 @@ export default function MagicLink() {
                 and click the link to sign in!
               </p>
               <Button className="w-full" asChild>
-                <a target="_blank" href="https://mail.google.com/mail/u/0/#search/from%3AExamPortal%20%3Cqueries%40linkfolio.space%3E">
+                <a target="_blank" href="https://mail.google.com/mail/u/0/#search/from%3Aonboarding%20%3Conboarding%40linkfolio.space%3E">
                   Open Email Inbox <MoveUpRight />
                 </a>
               </Button>

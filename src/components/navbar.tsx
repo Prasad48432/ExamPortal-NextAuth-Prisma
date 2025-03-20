@@ -18,7 +18,7 @@ const Navbar = ({ session }: { session: any }) => {
   const pathname = usePathname();
 
   // List of routes where you don't want the navbar
-  const hideNavbarRoutes = ["/sign-in"];
+  const hideNavbarRoutes = ["/sign-in","/linksent"];
   const shouldShowNavbar =
     !hideNavbarRoutes.includes(pathname) &&
     !pathname.startsWith("/exams/") &&
