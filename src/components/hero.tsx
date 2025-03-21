@@ -7,7 +7,6 @@ import {
   SiAwsamplify,
   SiBehance,
   SiDocker,
-  SiFacebook,
   SiKubernetes,
   SiPrisma,
   SiSupabase,

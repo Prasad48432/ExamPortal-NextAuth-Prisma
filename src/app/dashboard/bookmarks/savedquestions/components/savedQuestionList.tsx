@@ -125,7 +125,7 @@ const SavedQuestionList = ({
                 <a
                   href={`${question.question.reference}`}
                   target="_blank"
-                  className="flex underline text-primary items-center break-all md:break-words overflow-hidden"
+                  className="flex underline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 items-center break-all md:break-words overflow-hidden"
                 >
                   {question.question.reference}
                 </a>

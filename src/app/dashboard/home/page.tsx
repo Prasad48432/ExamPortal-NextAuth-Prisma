@@ -18,7 +18,6 @@ import {
   ChevronRight,
   Clock,
   Target,
-  XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -28,7 +27,7 @@ import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 const HomePage = async () => {
   const session = await auth();
 
-  const results = await db.examResult.findMany({
+  const resultsPromise = db.examResult.findMany({
     orderBy: {
       completedAt: "desc",
     },
@@ -41,13 +40,13 @@ const HomePage = async () => {
     },
   });
 
-  const user = await db.user.findUnique({
+  const userPromise = db.user.findUnique({
     where: {
       id: session?.user?.id,
     },
   });
 
-  const savedExams = await db.savedExam.findMany({
+  const savedExamsPromise = db.savedExam.findMany({
     where: {
       userId: session?.user?.id,
     },
@@ -55,6 +54,12 @@ const HomePage = async () => {
       exam: true,
     },
   });
+
+  const [results, user, savedExams] = await Promise.all([
+    resultsPromise,
+    userPromise,
+    savedExamsPromise,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full">

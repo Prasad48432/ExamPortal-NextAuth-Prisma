@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Award, BookOpen, CheckCircle } from "lucide-react";
 import ResultsChart from "./components/examResultsChart";
-import ComparisionChart from "./components/comparisionChart";
+import ComparisionChart from "./components/ratiosPieChart";
+import ExamRatioPieChart from "./components/examRatioPieChart";
 
 const Results = async () => {
   const session = await auth();
@@ -25,6 +26,12 @@ const Results = async () => {
     },
     include: {
       exam: true,
+    },
+  });
+
+  const user = await db.user.findUnique({
+    where: {
+      id: session?.user?.id,
     },
   });
 
@@ -47,15 +54,18 @@ const Results = async () => {
 
         <Card className="w-full lg:w-1/2 border bg-sidebar/80 text-card-foreground shadow">
           <CardHeader>
-            <CardTitle className="text-lg leading-none">
-              Bar Chart - Multiple
-            </CardTitle>
+            <CardTitle className="text-lg leading-none">Ratios Chart</CardTitle>
             <CardDescription className="leading-none">
-              January - June 2024
+              Correct-Wrong-Unanswered ratio
+              <span className="flex items-center justify-around mt-11 text-base font-medium">
+                <p>Last Exam Ratio</p>
+                <p>All Exams Ratio</p>
+              </span>
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ComparisionChart />
+          <CardContent className="flex flex-col lg:flex-row">
+            <ExamRatioPieChart result={results[0]} />
+            <ComparisionChart user={user!} />
           </CardContent>
         </Card>
       </div>

@@ -51,7 +51,8 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))',
 				'success': 'hsl(var(--chart-success))',
-				'fail': 'hsl(var(--chart-fail))'
+				'fail': 'hsl(var(--chart-fail))',
+				'warning' : 'hsl(var(--chart-warning))',
   			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',

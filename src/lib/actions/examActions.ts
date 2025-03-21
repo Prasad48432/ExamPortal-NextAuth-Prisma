@@ -93,6 +93,10 @@ export async function submitExamResult(
           answers: formattedAnswers as any,
           completedAt: new Date().toISOString(),
           status: "completed",
+          totalQuestionsAttempted: attemptedQuestions,
+          totalCorrect: correctAnswers,
+          totalWrong: wrongAnswers,
+          totalUnanswered: unanswered,
           examPassed: score >= passingScore,
           timeSpent: timeDifferenceInSeconds,
         },
@@ -108,7 +112,9 @@ export async function submitExamResult(
           totalWrong: { increment: wrongAnswers },
           totalUnanswered: { increment: unanswered },
           totalTimeSpent: { increment: timeDifferenceInSeconds },
-          totalAccuracy: { increment: (correctAnswers/attemptedQuestions)*100},
+          totalAccuracy: {
+            increment: (correctAnswers / attemptedQuestions) * 100,
+          },
         },
       });
     });
@@ -143,7 +149,12 @@ export async function saveExam(userId: string, examId: string, action: string) {
   }
 }
 
-export async function saveQuestion(userId: string, questionId: string, examId: string, action: string){
+export async function saveQuestion(
+  userId: string,
+  questionId: string,
+  examId: string,
+  action: string
+) {
   try {
     if (action === "add") {
       await db.bookmarkedQuestion.create({

@@ -51,6 +51,7 @@ html {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --chart-success: 140 60% 45%;
+    --chart-warning: 50 100% 50%;
     --chart-fail: 0 70% 50%;
   }
 
@@ -88,6 +89,7 @@ html {
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --chart-success: 140 70% 55%;
+    --chart-warning: 50 100% 40%;
     --chart-fail: 0 80% 60%;
   }
 }
