@@ -12,6 +12,7 @@ import { Award, BookOpen, CheckCircle } from "lucide-react";
 import ResultsChart from "./components/examResultsChart";
 import ComparisionChart from "./components/ratiosPieChart";
 import ExamRatioPieChart from "./components/examRatioPieChart";
+import AccuracyChart from "./components/accuracyChart";
 
 const Results = async () => {
   const session = await auth();
@@ -37,8 +38,8 @@ const Results = async () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-4 w-full">
-        <Card className="w-full lg:w-1/2 border bg-sidebar/80 text-card-foreground shadow">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-center justify-center gap-4 w-full">
+        <Card className="col-span-1 border bg-sidebar/80 text-card-foreground shadow">
           <CardHeader>
             <CardTitle className="text-lg leading-none">
               Performance Chart
@@ -52,7 +53,7 @@ const Results = async () => {
           </CardContent>
         </Card>
 
-        <Card className="w-full lg:w-1/2 border bg-sidebar/80 text-card-foreground shadow">
+        <Card className="col-span-1 border bg-sidebar/80 text-card-foreground shadow">
           <CardHeader>
             <CardTitle className="text-lg leading-none">Ratios Chart</CardTitle>
             <CardDescription className="leading-none">
@@ -66,6 +67,20 @@ const Results = async () => {
           <CardContent className="flex flex-col lg:flex-row">
             <ExamRatioPieChart result={results[0]} />
             <ComparisionChart user={user!} />
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-1 border bg-sidebar/80 text-card-foreground shadow">
+          <CardHeader>
+            <CardTitle className="text-lg leading-none">
+              Accuracy Chart
+            </CardTitle>
+            <CardDescription className="leading-none">
+              Correct to attempted answers ratio every exam
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AccuracyChart results={results} />
           </CardContent>
         </Card>
       </div>

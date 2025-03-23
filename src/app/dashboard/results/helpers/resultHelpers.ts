@@ -48,10 +48,11 @@ export function getFeedbackColor(duration: number, timeSpent: number): string {
 
 export function getAccuracyColor(percent: number): string {
   if (percent <= 50) {
-    return "text-chart-fail";
-  } else if (percent <= 70) {
-    return "text-yellow-600 dark:text-yellow-500";
+    return "text-chart-fail"; // 0% - 50%
+  } else if (percent > 50 && percent <= 75) {
+    return "text-chart-warning"; // 51% - 75%
   } else {
-    return "text-chart-success";
+    return "text-chart-success"; // 76% and above
   }
 }
+

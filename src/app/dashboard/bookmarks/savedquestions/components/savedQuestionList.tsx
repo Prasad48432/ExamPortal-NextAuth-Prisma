@@ -3,7 +3,7 @@ import { ToastError } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { saveQuestion } from "@/lib/actions/examActions";
 import type { BookmarkedQuestion, Question } from "@prisma/client";
-import { BookMarked, LinkIcon, Trash } from "lucide-react";
+import { BookMarked, LinkIcon, Loader2, Trash } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
 
@@ -19,6 +19,7 @@ const SavedQuestionList = ({
   userId: string;
 }) => {
   const [savedQuestions, setSavedQuestions] = useState<Questions[]>(questions);
+  const [bookmarkLoading, setBookMarkLoading] = useState(false);
 
   const handleQuestionRemove = async ({
     userId,
@@ -31,14 +32,17 @@ const SavedQuestionList = ({
     examId: string;
     action: string;
   }) => {
+    setBookMarkLoading(true);
     const response = await saveQuestion(userId, questionId, examId, action);
 
     if (response.success) {
       setSavedQuestions((prev) =>
         prev.filter((question) => question.question.id !== questionId)
       );
+      setBookMarkLoading(false);
     } else {
       ToastError({ message: "Error removing exam" });
+      setBookMarkLoading(false);
     }
   };
   return (
@@ -62,7 +66,11 @@ const SavedQuestionList = ({
                 });
               }}
             >
-              <Trash className="text-chart-fail" />
+              {bookmarkLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Trash size={18} className="text-chart-fail" />
+              )}
             </Button>
             {/* Question text */}
             <h4 className="text-base font-medium mb-4">

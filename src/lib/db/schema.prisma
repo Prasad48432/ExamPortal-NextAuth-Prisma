@@ -122,6 +122,8 @@ model SavedExam {
     examId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, examId])
 }
 
 model BookmarkedQuestion {
@@ -131,4 +133,13 @@ model BookmarkedQuestion {
     examId     String   @default("exam")
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, questionId])
+}
+
+model RandomTable {
+    id     String @id @default(uuid())
+    table  String
+    row    Int
+    column Int
 }

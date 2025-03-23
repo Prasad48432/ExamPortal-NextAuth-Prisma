@@ -40,6 +40,8 @@ const ExamsList = ({
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  
   const [savedExams, setSavedExams] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(
       exams.map((exam) => [
