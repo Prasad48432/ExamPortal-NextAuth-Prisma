@@ -1,9 +1,7 @@
 "use server";
 
 import db from "@/lib/db/db";
-import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
-import { ToastError } from "@/components/toast";
 
 export async function insertQuestion(formData: FormData) {
   try {

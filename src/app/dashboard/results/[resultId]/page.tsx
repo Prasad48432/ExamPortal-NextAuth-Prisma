@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getQuestionsbyExamId } from "@/lib/actions/resultAction";
 import ResultSection from "../components/resultsection";
-import { Question } from "@prisma/client";
+import type { Question } from "@prisma/client";
 
 type Answer = {
   question_id: string;

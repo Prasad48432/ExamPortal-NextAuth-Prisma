@@ -4,10 +4,8 @@ import {
   Bookmark,
   Clock,
   FileText,
-  Trash,
   TrendingUp,
   Trophy,
-  Users,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -22,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Exam, SavedExam } from "@prisma/client";
 import { startExam } from "@/lib/questionActions";
-import { ToastError, ToastSuccess } from "@/components/toast";
+import { ToastError } from "@/components/toast";
 import { redirect } from "next/navigation";
 import { saveExam } from "@/lib/actions/examActions";
 

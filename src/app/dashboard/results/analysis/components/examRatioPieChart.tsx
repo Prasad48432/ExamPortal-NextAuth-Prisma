@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Label, Pie, PieChart } from "recharts";
-import type { ExamResult, User } from "@prisma/client";
+import type { ExamResult } from "@prisma/client";
 
 const ExamRatioPieChart = ({ result }: { result: ExamResult }) => {
   const totalAnswers =  result.totalCorrect! + result.totalWrong! + result.totalUnanswered!;

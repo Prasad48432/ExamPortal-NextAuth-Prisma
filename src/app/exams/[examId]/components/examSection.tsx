@@ -1,5 +1,5 @@
 "use client";
-import { BookmarkedQuestion, Exam, ExamResult, Question } from "@prisma/client";
+import type { BookmarkedQuestion, Exam, ExamResult, Question } from "@prisma/client";
 import {
   AlertCircle,
   Bookmark,
