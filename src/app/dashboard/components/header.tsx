@@ -8,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   return (
@@ -23,10 +22,9 @@ export function Header() {
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">Exam Portal</span>
-            <span className="truncate text-xs">User dashboard</span>
+            <span className="truncate text-xs text-sidebar-primary-foreground/50">User dashboard</span>
           </div>
         </SidebarMenuButton>
-        <ThemeToggle />
       </SidebarMenuItem>
     </SidebarMenu>
   );

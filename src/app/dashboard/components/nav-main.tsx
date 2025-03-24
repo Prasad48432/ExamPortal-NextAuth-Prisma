@@ -18,6 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function NavMain({
   items,
@@ -64,7 +65,9 @@ export function NavMain({
                           <a
                             href={subItem.url}
                             className={`block w-full px-3 py-2 rounded-md ${
-                              isActive ? "bg-muted text-primary font-medium" : ""
+                              isActive
+                                ? "bg-muted text-primary font-medium"
+                                : ""
                             }`}
                           >
                             <span>{subItem.title}</span>
@@ -78,6 +81,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
+        <ThemeToggle className="mx-auto" />
       </SidebarMenu>
     </SidebarGroup>
   );
