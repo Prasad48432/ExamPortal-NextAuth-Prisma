@@ -8,7 +8,7 @@ import {
 import { BarChart, Bar, CartesianGrid, XAxis, LabelList, Cell } from "recharts";
 import type { Exam, ExamResult } from "@prisma/client";
 import { BookOpenCheck, Tally5 } from "lucide-react";
-import { getAccuracyColor } from "../../helpers/resultHelpers";
+import { getAccuracyColor, getAccuracyHsl } from "../../helpers/resultHelpers";
 
 interface ExamResultWithExam extends ExamResult {
   exam: Exam;
@@ -16,11 +16,12 @@ interface ExamResultWithExam extends ExamResult {
 
 const AccuracyChart = ({ results }: { results: ExamResultWithExam[] }) => {
   const chartData = results.map((result) => {
-    const totalCorrect = result.totalCorrect || 1;
-    const totalQuestionsAttempted = result.totalQuestionsAttempted || 1;
-    const accuracy = Number(
-      ((totalCorrect / totalQuestionsAttempted) * 100).toFixed(2)
-    );
+    const totalCorrect = result.totalCorrect || 0;
+    const totalQuestionsAttempted = result.totalQuestionsAttempted || 0;
+    const accuracy =
+      totalQuestionsAttempted > 0
+        ? Number(((totalCorrect / totalQuestionsAttempted) * 100).toFixed(2))
+        : 0;
 
     return {
       exam: result.exam?.title || "Unknown Exam",
@@ -81,16 +82,20 @@ const AccuracyChart = ({ results }: { results: ExamResultWithExam[] }) => {
           }}
         />
         <Bar dataKey="accuracy" radius={4}>
-          {chartData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={
-                results[index].examPassed
-                  ? "hsl(var(--chart-success))"
-                  : "hsl(var(--chart-fail))"
-              }
-            />
-          ))}
+          {chartData.map((entry, index) => {
+            const accuracy =
+            results[index].totalQuestionsAttempted && results[index].totalCorrect && results[index].totalQuestionsAttempted > 0
+                ? Number(
+                    ((results[index].totalCorrect / results[index].totalQuestionsAttempted) * 100).toFixed(2)
+                  )
+                : 0;
+            return (
+              <Cell
+                key={`cell-${index}`}
+                fill={getAccuracyHsl(accuracy)}
+              />
+            );
+          })}
           <LabelList
             position="top"
             offset={6}

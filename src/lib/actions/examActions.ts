@@ -84,6 +84,8 @@ export async function submitExamResult(
   unanswered: number
 ) {
   try {
+
+
     await db.$transaction(async (tx) => {
       // Update examResult
       await tx.examResult.update({
@@ -112,15 +114,15 @@ export async function submitExamResult(
           totalWrong: { increment: wrongAnswers },
           totalUnanswered: { increment: unanswered },
           totalTimeSpent: { increment: timeDifferenceInSeconds },
-          totalAccuracy: {
-            increment: (correctAnswers / attemptedQuestions) * 100,
-          },
+          totalAccuracy: attemptedQuestions > 0 ? { increment: (correctAnswers / attemptedQuestions) * 100 } : undefined,
+
         },
       });
     });
 
     return { success: true, attemptId };
   } catch (error) {
+    console.log("error is",error);
     return { success: false };
   }
 }

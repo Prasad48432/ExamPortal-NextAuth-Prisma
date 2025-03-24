@@ -39,6 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useWarningCountdown from "@/hooks/useWarningCountdown";
 
 const ExamSection = ({
   lockQuestions,
@@ -139,7 +140,7 @@ const ExamSection = ({
         wrongAnswers,
         unanswered
       );
-      if (!result.success) throw new Error("error submitting");
+      // if (!result.success) throw new Error("error submitting");
 
       if (isFullScreen) {
         await exitFullScreen();
@@ -156,6 +157,16 @@ const ExamSection = ({
     handleSubmit,
     showTimerExpiryToast
   );
+  // const { warningSecondsLeft, warningStart } = useWarningCountdown(
+  //   handleSubmit,
+  //   isFullScreen
+  // );
+  
+  // useEffect(() => {
+  //   if (!isFullScreen) {
+  //     warningStart(15); // Start 15-second countdown when exiting full screen
+  //   }
+  // }, [isFullScreen]);
 
   useEffect(() => {
     if (attempt.securityCheck === true && attempt.startedAt) {
@@ -250,23 +261,24 @@ const ExamSection = ({
     );
   }
 
-  if (!isFullScreen && !submitting) {
-    return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex gap-4 items-center justify-end flex-col">
-            <h1 className="text-4xl font-bold">Please switch to full screen</h1>
-            <Button
-              onClick={() => activateFullScreen(isFullScreen)}
-              variant={"secondary"}
-            >
-              Enter
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (!isFullScreen && !submitting) {
+  //   return (
+  //     <div className="min-h-screen">
+  //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  //         <div className="flex gap-4 items-center justify-end flex-col">
+  //           <p>you have {warningSecondsLeft} to enter full screen</p>
+  //           <h1 className="text-4xl font-bold">Please switch to full screen</h1>
+  //           <Button
+  //             onClick={() => activateFullScreen(isFullScreen)}
+  //             variant={"secondary"}
+  //           >
+  //             Enter
+  //           </Button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen">

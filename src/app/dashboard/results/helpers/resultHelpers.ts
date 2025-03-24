@@ -56,3 +56,15 @@ export function getAccuracyColor(percent: number): string {
   }
 }
 
+export function getAccuracyHsl(percent: number): string {
+  if (percent <= 50) {
+    return "hsl(var(--chart-fail))"; // 0% - 50%
+  } else if (percent > 50 && percent <= 75) {
+    return "hsl(var(--chart-warning))"; // 51% - 75%
+  } else {
+    return "hsl(var(--chart-success))"; // 76% and above
+  }
+}
+
+
+

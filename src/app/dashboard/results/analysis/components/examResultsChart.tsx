@@ -82,7 +82,7 @@ const ResultsChart = ({ results }: { results: ExamResultWithExam[] }) => {
           <LabelList
             position="top"
             offset={6}
-            className="fill-foreground"
+            className="fill-foreground mt-1"
             fontSize={12}
           />
         </Bar>

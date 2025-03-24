@@ -13,6 +13,7 @@ import ResultsChart from "./components/examResultsChart";
 import ComparisionChart from "./components/ratiosPieChart";
 import ExamRatioPieChart from "./components/examRatioPieChart";
 import AccuracyChart from "./components/accuracyChart";
+import { RadarAnalysisChart } from "./components/completeAnalysisChart";
 
 const Results = async () => {
   const session = await auth();
@@ -45,7 +46,7 @@ const Results = async () => {
               Performance Chart
             </CardTitle>
             <CardDescription className="leading-none">
-              Attempted Exams
+              Attempted exams performance
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -75,12 +76,29 @@ const Results = async () => {
             <CardTitle className="text-lg leading-none">
               Accuracy Chart
             </CardTitle>
-            <CardDescription className="leading-none">
+            <CardDescription className="leading-none text-sm">
               Correct to attempted answers ratio every exam
             </CardDescription>
           </CardHeader>
           <CardContent>
             <AccuracyChart results={results} />
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-1 border bg-sidebar/80 text-card-foreground shadow">
+          <CardHeader>
+            <CardTitle className="text-lg leading-none">
+              Complete Analysis
+            </CardTitle>
+            <CardDescription className="leading-none text-sm">
+              All aspects analysed last exam vs average
+              <span className="flex items-center justify-around mt-11 text-base font-medium">
+                <p>(Last Exam/Average) all aspects analysis</p>
+              </span>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RadarAnalysisChart result={results[0]} user={user!} />
           </CardContent>
         </Card>
       </div>

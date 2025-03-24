@@ -56,7 +56,7 @@ export default async function Results() {
                               ? formatDateTime(result.completedAt)
                               : "Not completed"}
                           </p>
-                          {result.score && (
+                          {result.score !== null && result.score !== undefined && (
                             <p className="mt-2 flex items-center text-sm sm:mt-0 sm:ml-6">
                               {result.score >=
                               (result.exam?.passingScore || 70) ? (

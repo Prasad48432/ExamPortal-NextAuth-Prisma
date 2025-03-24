@@ -1,14 +1,9 @@
 "use client";
 import {
-  BookOpen,
-  CheckCheck,
   CheckCircle,
   ChevronLeft,
   Clock,
-  Info,
-  Lightbulb,
   MessageSquareOff,
-  SquareSlash,
   Target,
   X,
   XCircle,
@@ -23,7 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartConfig } from "@/components/ui/chart";
 import ScoreBadge from "@/components/scorebadge";
 import ExamStatusBadge from "@/components/statusbadge";
 import {
@@ -35,12 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatTime } from "@/lib/utils/timeFomat";
-import {
-  getAccuracyColor,
-  getExamFeedback,
-  getFeedbackColor,
-  getQuestionFeedback,
-} from "../helpers/resultHelpers";
+import { getAccuracyColor, getFeedbackColor } from "../helpers/resultHelpers";
 import { InfoPopover } from "./infoPopover";
 import { formatDateTime } from "@/lib/utils/dateTimeFormat";
 
@@ -57,25 +46,6 @@ const ResultSection = ({
   answersMap: any;
   user: User;
 }) => {
-  const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
-  ];
-  const chartConfig = {
-    desktop: {
-      label: "Desktop",
-      color: "hsl(var(--chart-1))",
-    },
-    mobile: {
-      label: "Mobile",
-      color: "hsl(var(--chart-2))",
-    },
-  } satisfies ChartConfig;
-
   const [filter, setFilter] = useState("all");
 
   const answersArray = (result.answers as any[]) ?? []; // Ensure it's an array
@@ -96,21 +66,12 @@ const ResultSection = ({
     return true; // Show all by default
   });
 
-  const examCorrect = Array.isArray(result.answers)
-    ? (result.answers as any[]).filter((a) => a?.is_correct).length
-    : 0;
-
-  const examWrong = Array.isArray(result.answers)
-    ? (result.answers as any[]).filter(
-        (a) => !a?.is_correct && a?.selected_option !== -1
-      ).length
-    : 0;
+  const examCorrect = result.totalCorrect || 0;
+  const examWrong = result.totalWrong || 0;
 
   const examAttempted = examCorrect + examWrong;
 
-  const examUnanswered = Array.isArray(result.answers)
-    ? (result.answers as any[]).filter((a) => a?.selected_option === -1).length
-    : 0;
+  const examUnanswered = result.totalUnanswered || 0;
 
   const totalTimeSpent = user.totalTimeSpent || 0;
   const totalExamsTaken = user.totalExamsTaken || 0;
@@ -128,7 +89,11 @@ const ResultSection = ({
   const totalAverageTimeSpentperQuestion =
     totalTimeSpent / (totalQuestionsAttempted + totalUnanswered);
 
-  const examAccuracy = ((examCorrect / examAttempted) * 100).toFixed(2);
+  const examAccuracy =
+    examAttempted > 0
+      ? ((examCorrect / examAttempted) * 100).toFixed(2)
+      : "0.00";
+
   const totalAverageAccuracy = (totalAccuracy / totalExamsTaken).toFixed(2);
 
   return (
@@ -302,7 +267,9 @@ const ResultSection = ({
                     <span className="lg:min-w-44 flex items-center justify-center lg:justify-around gap-2 lg:gap-4 text-sm lg:text-base font-semibold">
                       <p
                         className={`${getAccuracyColor(
-                          (examCorrect / examAttempted) * 100
+                          examAttempted > 0
+                            ? (examCorrect / examAttempted) * 100
+                            : 0
                         )}`}
                       >
                         {examAccuracy}%
