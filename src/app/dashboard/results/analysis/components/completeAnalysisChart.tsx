@@ -31,53 +31,75 @@ export function RadarAnalysisChart({
   const chartData = [
     {
       parameter: "Accuracy",
-      lastexam: (result.totalCorrect! / result.totalQuestionsAttempted!) * 100,
-      average: (user.totalCorrect! / user.totalQuestionsAttempted!) * 100,
+      lastexam: Number(
+        (
+          (result.totalCorrect! / result.totalQuestionsAttempted!) *
+          100
+        ).toFixed(1)
+      ),
+      average: Number((user.totalAccuracy! / user.totalExamsTaken!).toFixed(1)),
     },
     {
       parameter: "Time/Exam",
       lastexam: result.timeSpent,
-      average: user.totalTimeSpent! / user.totalExamsTaken!,
+      average: Number((user.totalTimeSpent! / user.totalExamsTaken!).toFixed(1)),
     },
     {
       parameter: "Time/Question",
-      lastexam:
-        result.timeSpent / result.totalQuestionsAttempted! +
-        result.totalUnanswered!,
-      average:
-        user.totalTimeSpent! / user.totalQuestionsAttempted! +
-        user.totalUnanswered!,
+      lastexam: Number((result.timeSpent / (result.totalQuestionsAttempted! +result.totalUnanswered!)).toFixed(1)),
+      average: Number((user.totalTimeSpent! / (user.totalQuestionsAttempted! +user.totalUnanswered!)).toFixed(1)),
     },
     {
       parameter: "Unanswered",
-      lastexam:
-        (result.totalUnanswered! /
-          (result.totalQuestionsAttempted! + result.totalUnanswered!)) *
-        100,
-      average:
-        (user.totalUnanswered! /
-          user.totalExamsTaken! /
-          ((user.totalQuestionsAttempted! + user.totalUnanswered!) /
-            user.totalExamsTaken!)) *
-        100,
-    },
-    {
-      parameter: "Correct",
-      lastexam: (result.totalCorrect! / result.totalQuestionsAttempted!) * 100,
-      average:
-        (user.totalCorrect! /
-          user.totalExamsTaken! /
-          (user.totalQuestionsAttempted! / user.totalExamsTaken!)) *
-        100,
+      lastexam: Number(
+        (
+          (result.totalUnanswered! /
+            (result.totalQuestionsAttempted! + result.totalUnanswered!)) *
+          100
+        ).toFixed(1)
+      ),
+      average: Number(
+        (
+          (user.totalUnanswered! /
+            user.totalExamsTaken! /
+            ((user.totalQuestionsAttempted! + user.totalUnanswered!) /
+              user.totalExamsTaken!)) *
+          100
+        ).toFixed(1)
+      ),
     },
     {
       parameter: "Wrong",
-      lastexam: (result.totalWrong! / result.totalQuestionsAttempted!) * 100,
-      average:
-        (user.totalWrong! /
-          user.totalExamsTaken! /
-          (user.totalQuestionsAttempted! / user.totalExamsTaken!)) *
-        100,
+      lastexam: Number(
+        ((result.totalWrong! / result.totalQuestionsAttempted!) * 100).toFixed(
+          1
+        )
+      ),
+      average: Number(
+        (
+          (user.totalWrong! /
+            user.totalExamsTaken! /
+            (user.totalQuestionsAttempted! / user.totalExamsTaken!)) *
+          100
+        ).toFixed(1)
+      ),
+    },
+    {
+      parameter: "Correct",
+      lastexam: Number(
+        (
+          (result.totalCorrect! / result.totalQuestionsAttempted!) *
+          100
+        ).toFixed(1)
+      ),
+      average: Number(
+        (
+          (user.totalCorrect! /
+            user.totalExamsTaken! /
+            (user.totalQuestionsAttempted! / user.totalExamsTaken!)) *
+          100
+        ).toFixed(1)
+      ),
     },
   ];
   return (

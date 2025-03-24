@@ -50,7 +50,7 @@ const SavedQuestionList = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-4">
         {savedQuestions.map((question, index) => (
           <div
-            className="w-full flex flex-col col-span-1 p-2 relative"
+            className="w-full flex flex-col col-span-1 p-2 relative border rounded-md"
             key={index}
           >
             <Button
@@ -73,7 +73,7 @@ const SavedQuestionList = ({
               )}
             </Button>
             {/* Question text */}
-            <h4 className="text-base font-medium mb-4">
+            <h4 className="text-base font-medium mb-4 w-[95%]">
               {question.question.questionText}
             </h4>
 

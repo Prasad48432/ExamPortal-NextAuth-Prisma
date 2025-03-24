@@ -46,6 +46,10 @@ export default async function Page(props: {
     return <div>Attempt not found</div>;
   }
 
+  if(attempt.data.userId !== session.user?.id){
+    return <div>Invalid user</div>;
+  }
+
   if(attempt.data.status === 'completed'){
     return <div>Exam already completed</div>
   }

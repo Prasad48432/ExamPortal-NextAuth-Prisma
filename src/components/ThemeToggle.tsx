@@ -12,12 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function ThemeToggle() {
+export function ThemeToggle({className}:{className?:string}) {
   const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger className={className} asChild>
         <Button variant="outline" size="icon" className="w-7 h-7 rounded-md">
           <Sun
             size={15}

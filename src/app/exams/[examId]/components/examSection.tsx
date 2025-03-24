@@ -157,6 +157,8 @@ const ExamSection = ({
     handleSubmit,
     showTimerExpiryToast
   );
+
+
   // const { warningSecondsLeft, warningStart } = useWarningCountdown(
   //   handleSubmit,
   //   isFullScreen
@@ -261,24 +263,23 @@ const ExamSection = ({
     );
   }
 
-  // if (!isFullScreen && !submitting) {
-  //   return (
-  //     <div className="min-h-screen">
-  //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  //         <div className="flex gap-4 items-center justify-end flex-col">
-  //           <p>you have {warningSecondsLeft} to enter full screen</p>
-  //           <h1 className="text-4xl font-bold">Please switch to full screen</h1>
-  //           <Button
-  //             onClick={() => activateFullScreen(isFullScreen)}
-  //             variant={"secondary"}
-  //           >
-  //             Enter
-  //           </Button>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (!isFullScreen && !submitting) {
+    return (
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex gap-4 items-center justify-end flex-col">
+            <h1 className="text-4xl font-bold">Please switch to full screen</h1>
+            <Button
+              onClick={() => activateFullScreen(isFullScreen)}
+              variant={"secondary"}
+            >
+              Enter
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
