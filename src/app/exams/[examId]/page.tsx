@@ -9,7 +9,13 @@ import db from "@/lib/db/db";
 import { isJsonValueEmpty } from "./utils/isJsonEmpty";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { BookCheck, FileWarning, IdCard, TicketX } from "lucide-react";
+import {
+  BookCheck,
+  FileWarning,
+  IdCard,
+  TicketX,
+  UserRoundX,
+} from "lucide-react";
 
 type Params = Promise<{ examId: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -33,7 +39,7 @@ export default async function Page(props: {
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
           <IdCard size={80} />
           <p className="text-xl font-semibold">Attempt ID Not Found</p>
-          <p className="text-center">
+          <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
             Please provide Attempt ID along with provided Exam Id and try again
             find info at{" "}
             <a
@@ -56,7 +62,7 @@ export default async function Page(props: {
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
           <FileWarning size={80} />
           <p className="text-xl font-semibold">Exam Not Found</p>
-          <p className="text-center">
+          <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
             We couldn't find an exam with the provided ID. Please double-check
             and try again. find exams at{" "}
             <a
@@ -79,9 +85,9 @@ export default async function Page(props: {
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
           <TicketX size={80} />
           <p className="text-xl font-semibold">Invalid Attempt Id</p>
-          <p className="text-center">
+          <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
             There is something wrong with the attempt id provided. please
-            doucle-check the id and try again. find exams at{" "}
+            double-check the id and try again. find exams at{" "}
             <a
               href="/exams"
               className="underline text-primary/80 underline-offset-1"
@@ -95,7 +101,24 @@ export default async function Page(props: {
   }
 
   if (attempt.data.userId !== session.user?.id) {
-    return <div>Invalid user</div>;
+    return (
+      <div className="h-screen w-full">
+        <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
+          <UserRoundX size={80} />
+          <p className="text-xl font-semibold">Invalid User</p>
+          <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
+            There is something wrong with the current user please find help at
+            contact ceneter . find help at{" "}
+            <a
+              href="/contact"
+              className="underline text-primary/80 underline-offset-1"
+            >
+              /contact
+            </a>
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (attempt.data.status === "completed") {
@@ -104,7 +127,7 @@ export default async function Page(props: {
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
           <BookCheck className="text-chart-success/70" size={80} />
           <p className="text-xl font-semibold">Exam already completed</p>
-          <p className="text-center">
+          <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
             You have already completed this exam. Review your results or contact
             support if needed. find result at{" "}
             <a
