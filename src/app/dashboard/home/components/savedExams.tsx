@@ -124,7 +124,7 @@ const SavedExams = ({
         </CardContent>
         <CardFooter className="justify-end">
           <Link
-            href={`/dashboard/results`}
+            href={`/exams`}
             className="flex items-center justify-center"
           >
             <Button variant={"link"}>

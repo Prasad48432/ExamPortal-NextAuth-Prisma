@@ -4,6 +4,7 @@ import {
   Bookmark,
   Clock,
   FileText,
+  Loader2,
   TrendingUp,
   Trophy,
 } from "lucide-react";
@@ -39,7 +40,6 @@ const ExamsList = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  
   const [savedExams, setSavedExams] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(
       exams.map((exam) => [
@@ -83,26 +83,36 @@ const ExamsList = ({
     userId,
     examId,
     action,
+    setBookmarkLoading,
   }: {
     userId: string;
     examId: string;
     action: string;
+    setBookmarkLoading: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    const response = await saveExam(userId, examId, action);
-    if (response.success) {
-      if (action === "add") {
-        setSavedExams((prev) => ({
-          ...prev,
-          [examId]: !prev[examId],
-        }));
-      } else if (action === "delete") {
-        setSavedExams((prev) => ({
-          ...prev,
-          [examId]: !prev[examId],
-        }));
+    setBookmarkLoading(true);
+
+    try {
+      const response = await saveExam(userId, examId, action);
+      if (response.success) {
+        if (action === "add") {
+          setSavedExams((prev) => ({
+            ...prev,
+            [examId]: !prev[examId],
+          }));
+        } else if (action === "delete") {
+          setSavedExams((prev) => ({
+            ...prev,
+            [examId]: !prev[examId],
+          }));
+        }
+      } else {
+        ToastError({ message: "Error saving exam" });
       }
-    } else {
-      ToastError({ message: "Error saving exam" });
+    } catch (error) {
+      ToastError({ message: `Error saving exam ${error}` });
+    } finally {
+      setBookmarkLoading(false);
     }
   };
 
@@ -133,24 +143,13 @@ const ExamsList = ({
                     >
                       Start Exam
                     </Button>
-                    <Button
-                      onClick={() =>
-                        handleExamSave({
-                          userId: userId,
-                          examId: exam.id,
-                          action: savedExams[exam.id] ? "delete" : "add",
-                        })
-                      }
-                      className="h-8 w-8 flex lg:hidden"
-                      variant={"outline"}
-                      size={"icon"}
-                    >
-                      {savedExams[exam.id] ? (
-                        <Bookmark size={18} className="fill-foreground" />
-                      ) : (
-                        <Bookmark size={18} />
-                      )}
-                    </Button>
+                    <BookmarkButton
+                      handleExamSave={handleExamSave}
+                      userId={userId}
+                      exam={exam}
+                      savedExams={savedExams}
+                      className="flex lg:hidden"
+                    />
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between">
@@ -169,24 +168,13 @@ const ExamsList = ({
                     </p>
                   </div>
                   <div className="mt-3 sm:mt-0">
-                    <Button
-                      onClick={() =>
-                        handleExamSave({
-                          userId: userId,
-                          examId: exam.id,
-                          action: savedExams[exam.id] ? "delete" : "add",
-                        })
-                      }
-                      className="h-8 w-8 hidden lg:flex"
-                      variant={"outline"}
-                      size={"icon"}
-                    >
-                      {savedExams[exam.id] ? (
-                        <Bookmark size={18} className="fill-foreground" />
-                      ) : (
-                        <Bookmark size={18} />
-                      )}
-                    </Button>
+                    <BookmarkButton
+                      handleExamSave={handleExamSave}
+                      userId={userId}
+                      exam={exam}
+                      savedExams={savedExams}
+                      className="hidden lg:flex"
+                    />
                   </div>
                 </div>
               </Card>
@@ -284,6 +272,46 @@ const ExamsList = ({
         </Dialog>
       )}
     </div>
+  );
+};
+
+const BookmarkButton = ({
+  handleExamSave,
+  userId,
+  exam,
+  savedExams,
+  className,
+}: {
+  handleExamSave: any;
+  userId: string;
+  exam: Exam;
+  savedExams: Record<string, boolean>;
+  className: string;
+}) => {
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  return (
+    <Button
+      onClick={() =>
+        handleExamSave({
+          userId: userId,
+          examId: exam.id,
+          action: savedExams[exam.id] ? "delete" : "add",
+          setBookmarkLoading: setBookmarkLoading,
+        })
+      }
+      className={`h-8 w-8 ${className}`}
+      variant={"outline"}
+      size={"icon"}
+    >
+      {bookmarkLoading ? (
+        <Loader2 className="animate-spin" />
+      ) : savedExams[exam.id] ? (
+        <Bookmark size={18} className="fill-foreground" />
+      ) : (
+        <Bookmark size={18} />
+      )}
+    </Button>
   );
 };
 

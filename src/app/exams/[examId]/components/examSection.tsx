@@ -9,10 +9,12 @@ import {
   AlertCircle,
   Bookmark,
   Check,
+  CheckCircle,
   ChevronRight,
   CircleCheck,
   Clock,
   Loader2,
+  LockKeyhole,
   Maximize,
   Minimize,
   Settings,
@@ -245,47 +247,53 @@ const ExamSection = ({
 
   if (attempt.securityCheck === false) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex gap-4 items-center justify-end flex-col">
-            <h1 className="text-xl font-bold">Security Check</h1>
+      <div className="h-screen w-full flex items-center justify-center bg-gradient-to-b from-background to-background/70 text-foreground">
+      <div className="max-w-lg w-full p-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <LockKeyhole size={80} className="text-foreground/70" />
+          <h1 className="text-3xl font-bold text-foreground">Security Check</h1>
+
+          <div className="text-foreground/80">
             <p className="text-lg font-semibold">{examDetails.title}</p>
-            <p className="text-base">
-              complete this exam in {examDetails.duration}minutes
+            <p className="text-base">{examDetails.description}</p>
+            <p className="mt-2 text-base">
+              Exam duration : <span className="font-semibold text-primary">{examDetails.duration} minutes</span>
             </p>
-            <Button
-              onClick={() => {
-                handleSecurityCheck();
-              }}
-              className="h-8"
-            >
-              Start Test
-            </Button>
           </div>
+
+          <div className="mt-4 text-left w-full flex flex-col gap-3 items-center justify-center">
+            <div className="flex items-center gap-2 text-foreground/80">
+              <CheckCircle size={20} className="text-chart-success" />
+              <p>No tab switching or minimizing screen</p>
+            </div>
+            <div className="flex items-center gap-2 text-foreground/80">
+              <CheckCircle size={20} className="text-chart-success" />
+              <p>Ensure a stable internet connection {" "}</p>
+            </div>
+            <div className="flex items-center gap-2 text-foreground/80">
+              <CheckCircle size={20} className="text-chart-success" />
+              <p>Find a quiet place with no distractions</p>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => handleSecurityCheck()}
+            className="h-8 px-3"
+          >
+            Start Test
+          </Button>
         </div>
       </div>
+    </div>
     );
   }
 
   if (!isFullScreen && !submitting) {
     return (
-      // <div className="min-h-screen">
-      //   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      //     <div className="flex gap-4 items-center justify-end flex-col">
-      //       <h1 className="text-4xl font-bold">Please switch to full screen</h1>
-      // <Button
-      //   onClick={() => activateFullScreen(isFullScreen)}
-      //   variant={"secondary"}
-      // >
-      //   Enter
-      // </Button>
-      //     </div>
-      //   </div>
-      // </div>
       <div className="h-screen w-full">
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
           <Maximize size={80} />
-          <p className="text-xl font-semibold">Full Screen !</p>
+          <p className="text-2xl font-semibold">Full Screen !</p>
           <p className="text-center w-[80%] lg:w-full text-sm lg:text-base">
             This exam is only allowed to be written in full screen mode. please
             enter full screen mode now{" "}
