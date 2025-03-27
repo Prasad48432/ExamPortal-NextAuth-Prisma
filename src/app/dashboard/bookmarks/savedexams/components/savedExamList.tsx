@@ -40,28 +40,29 @@ const SavedExamList = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savedExams, setSavedExams] = useState<Exams[]>(exams);
-  const [bookmarkLoading, setBookMarkLoading] = useState(false);
 
   const handleExamRemove = async ({
     userId,
     examId,
     savedExamId,
     action,
+    setBookmarkLoading,
   }: {
     userId: string;
     examId: string;
     savedExamId: string;
     action: string;
+    setBookmarkLoading: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    setBookMarkLoading(true);
+    setBookmarkLoading(true);
     const response = await saveExam(userId, examId, action);
 
     if (response.success) {
       setSavedExams((prev) => prev.filter((exam) => exam.id !== savedExamId));
-      setBookMarkLoading(false);
+      setBookmarkLoading(false);
     } else {
       ToastError({ message: "Error removing exam" });
-      setBookMarkLoading(false);
+      setBookmarkLoading(false);
     }
   };
 
@@ -119,25 +120,13 @@ const SavedExamList = ({
                   >
                     Start Exam
                   </Button>
-                  <Button
-                    onClick={() =>
-                      handleExamRemove({
-                        userId: userId,
-                        examId: exam.exam.id,
-                        savedExamId: exam.id,
-                        action: "delete",
-                      })
-                    }
-                    className="h-8 w-8 flex lg:hidden"
-                    variant={"outline"}
-                    size={"icon"}
-                  >
-                    {bookmarkLoading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Trash size={18} className="text-chart-fail" />
-                    )}
-                  </Button>
+
+                  <DeleteButton
+                    handleExamRemove={handleExamRemove}
+                    userId={userId}
+                    exam={exam}
+                    className="flex lg:hidden"
+                  />
                 </div>
               </div>
 
@@ -158,25 +147,12 @@ const SavedExamList = ({
                   </p>
                 </div>
                 <div className="mt-3 sm:mt-0">
-                  <Button
-                    onClick={() =>
-                      handleExamRemove({
-                        userId: userId,
-                        examId: exam.exam.id,
-                        savedExamId: exam.id,
-                        action: "delete",
-                      })
-                    }
-                    className="h-8 w-8 hidden lg:flex"
-                    variant={"outline"}
-                    size={"icon"}
-                  >
-                    {bookmarkLoading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Trash size={18} className="text-chart-fail" />
-                    )}
-                  </Button>
+                  <DeleteButton
+                    handleExamRemove={handleExamRemove}
+                    userId={userId}
+                    exam={exam}
+                    className="hidden lg:flex"
+                  />
                 </div>
               </div>
             </Card>
@@ -270,6 +246,43 @@ const SavedExamList = ({
         </Dialog>
       )}
     </>
+  );
+};
+
+const DeleteButton = ({
+  handleExamRemove,
+  userId,
+  exam,
+  className,
+}: {
+  handleExamRemove: any;
+  userId: string;
+  exam: Exams;
+  className: string;
+}) => {
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  return (
+    <Button
+      onClick={() =>
+        handleExamRemove({
+          userId: userId,
+          examId: exam.exam.id,
+          savedExamId: exam.id,
+          action: "delete",
+          setBookmarkLoading: setBookmarkLoading,
+        })
+      }
+      className={`h-8 w-8 ${className}`}
+      variant={"outline"}
+      size={"icon"}
+    >
+      {bookmarkLoading ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        <Trash size={18} className="text-chart-fail" />
+      )}
+    </Button>
   );
 };
 
