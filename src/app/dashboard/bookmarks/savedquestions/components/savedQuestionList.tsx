@@ -19,30 +19,31 @@ const SavedQuestionList = ({
   userId: string;
 }) => {
   const [savedQuestions, setSavedQuestions] = useState<Questions[]>(questions);
-  const [bookmarkLoading, setBookMarkLoading] = useState(false);
 
   const handleQuestionRemove = async ({
     userId,
     questionId,
     examId,
     action,
+    setBookmarkLoading,
   }: {
     userId: string;
     questionId: string;
     examId: string;
     action: string;
+    setBookmarkLoading: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    setBookMarkLoading(true);
+    setBookmarkLoading(true);
     const response = await saveQuestion(userId, questionId, examId, action);
 
     if (response.success) {
       setSavedQuestions((prev) =>
         prev.filter((question) => question.question.id !== questionId)
       );
-      setBookMarkLoading(false);
+      setBookmarkLoading(false);
     } else {
       ToastError({ message: "Error removing exam" });
-      setBookMarkLoading(false);
+      setBookmarkLoading(false);
     }
   };
   return (
@@ -53,25 +54,12 @@ const SavedQuestionList = ({
             className="w-full flex flex-col col-span-1 p-2 relative border rounded-md"
             key={index}
           >
-            <Button
-              className="absolute top-2 right-2 h-8 w-8"
-              size={"icon"}
-              variant={"outline"}
-              onClick={() => {
-                handleQuestionRemove({
-                  userId: userId,
-                  questionId: question.question.id,
-                  examId: question.examId,
-                  action: "delete",
-                });
-              }}
-            >
-              {bookmarkLoading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Trash size={18} className="text-chart-fail" />
-              )}
-            </Button>
+            <DeleteButton
+              handleQuestionRemove={handleQuestionRemove}
+              userId={userId}
+              questionId={question.question.id}
+              examId={question.examId}
+            />
             {/* Question text */}
             <h4 className="text-base font-medium mb-4 w-[95%]">
               {question.question.questionText}
@@ -143,6 +131,43 @@ const SavedQuestionList = ({
         ))}
       </div>
     </div>
+  );
+};
+
+const DeleteButton = ({
+  handleQuestionRemove,
+  userId,
+  questionId,
+  examId,
+}: {
+  handleQuestionRemove: any;
+  userId: string;
+  questionId: string;
+  examId: string;
+}) => {
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  return (
+    <Button
+      onClick={() =>
+        handleQuestionRemove({
+          userId: userId,
+          questionId: questionId,
+          examId: examId,
+          action: "delete",
+          setBookmarkLoading: setBookmarkLoading,
+        })
+      }
+      className={`absolute top-2 right-2 h-8 w-8`}
+      variant={"outline"}
+      size={"icon"}
+    >
+      {bookmarkLoading ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        <Trash size={18} className="text-chart-fail" />
+      )}
+    </Button>
   );
 };
 

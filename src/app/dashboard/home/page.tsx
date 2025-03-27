@@ -160,7 +160,7 @@ const HomePage = async () => {
                         : (
                             (user?.totalAccuracy ?? 0) /
                             (user?.totalExamsTaken || 1)
-                          ).toFixed(2)}
+                          ).toFixed(2)}%
                     </div>
                   </dd>
                 </dl>
