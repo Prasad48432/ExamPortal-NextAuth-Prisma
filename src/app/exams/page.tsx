@@ -26,7 +26,7 @@ export default async function Exams() {
           <div className="w-full lg:w-80">
             <div className="relative lg:sticky top-10 lg:top-20 flex flex-col items-start justify-center">
               <h3 className="font-semibold mb-4 text-lg text-lightprimary-text dark:text-primary-text">
-                Discover more topics
+                Discover more exams
               </h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 {[
@@ -48,8 +48,55 @@ export default async function Exams() {
                 ))}
               </div>
               <h3 className="font-semibold mb-4 text-lg flex items-center justify-center gap-2 text-lightprimary-text dark:text-primary-text">
-                Discover trending profiles <TrendingUp className="w-5 h-5" />
+                Discover trending exams <TrendingUp className="w-5 h-5" />
               </h3>
+              <div className="flex flex-col items-center justify-center gap-4 w-full">
+                <div className="w-full rounded-lg h-20 border flex items-start justify-center p-2 gap-3">
+                  <img
+                    className="rounded-md h-full w-[30%] object-cover"
+                    src="https://wpblogassets.paytm.com/paytmblog/uploads/2023/08/Blogs_Paytm_Bond-Market-vs.-Stock-Market_-Whats-the-Difference_-1-1024x640.jpg"
+                  />
+                  <div className="flex flex-col items-start justify-center">
+                    <h1 className="font-semibold">Stock Hero</h1>
+                    <p className="line-clamp-2 text-xs">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                      Qui, id. Maiores saepe voluptates numquam placeat dolorum!
+                      Fugit odit totam exercitationem quasi voluptatem libero
+                      maiores architecto cum, quos minus dolorum deleniti?
+                    </p>
+                  </div>
+                </div>
+                <div className="w-full rounded-lg h-20 border flex items-start justify-center p-2 gap-3">
+                  <img
+                    className="rounded-md h-full w-[30%] object-cover"
+                    src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/20221222184908/web-development1.png"
+                  />
+                  <div className="flex flex-col items-start justify-center">
+                    <h1 className="font-semibold">Web Development</h1>
+                    <p className="line-clamp-2 text-xs">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                      Qui, id. Maiores saepe voluptates numquam placeat dolorum!
+                      Fugit odit totam exercitationem quasi voluptatem libero
+                      maiores architecto cum, quos minus dolorum deleniti?
+                    </p>
+                  </div>
+                </div>
+                <div className="w-full rounded-lg h-20 border flex items-start justify-center p-2 gap-3">
+                  <img
+                    className="rounded-md h-full w-[30%] object-cover"
+                    src="https://www.investopedia.com/thmb/NrxrUsas9jwJNuNYqcwf7sWeCWA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/bank-47189639b37541338a6f383147cba708.jpg"
+                  />
+                  <div className="flex flex-col items-start justify-center">
+                    <h1 className="font-semibold">Banking Basics</h1>
+                    <p className="line-clamp-2 text-xs">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                      Qui, id. Maiores saepe voluptates numquam placeat dolorum!
+                      Fugit odit totam exercitationem quasi voluptatem libero
+                      maiores architecto cum, quos minus dolorum deleniti?
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
