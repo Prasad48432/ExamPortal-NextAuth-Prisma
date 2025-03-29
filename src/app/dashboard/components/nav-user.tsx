@@ -6,7 +6,7 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  Sparkles,
+  Coins
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -84,8 +84,8 @@ export function NavUser({ user }: { user: User | undefined }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+                <Coins />
+                Access Points <span className="font-semibold">45</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -96,7 +96,7 @@ export function NavUser({ user }: { user: User | undefined }) {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                Payments
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
@@ -104,7 +104,7 @@ export function NavUser({ user }: { user: User | undefined }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuItem className="text-chart-fail" onClick={handleSignOut}>
               <LogOut />
               Log out
             </DropdownMenuItem>

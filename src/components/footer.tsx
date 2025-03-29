@@ -20,7 +20,7 @@ const Footer = () => {
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <a
-            href="https://flowbite.com/"
+            href="/"
             className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
           >
             <p className="text-lg font-bold text-primary">Exam Portal</p>
@@ -51,7 +51,7 @@ const Footer = () => {
         <hr className="my-6  sm:mx-auto  lg:my-8" />
         <span className="block text-sm  sm:text-center ">
           © 2025{" "}
-          <a href="https://flowbite.com/" className="hover:underline">
+          <a href="/" className="hover:underline">
             EXAM PORTAL™
           </a>
           . All Rights Reserved.
