@@ -14,7 +14,7 @@ import React from "react";
 
 export default function BreadcrumbDynamic() {
   const pathname = usePathname();
-  const pathSegments = pathname.split("/").filter((segment) => segment); // Split and remove empty segments
+  const pathSegments = pathname.split("/").filter((segment) => segment);
 
   return (
     <Breadcrumb className="w-[90%] lg:w-full truncate">

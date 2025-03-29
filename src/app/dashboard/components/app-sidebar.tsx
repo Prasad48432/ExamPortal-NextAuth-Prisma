@@ -35,137 +35,7 @@ import {
 import type { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Results",
-      url: "/results",
-      icon: ChartBar,
-      items: [
-        {
-          title: "Results",
-          url: "/dashboard/results",
-        },
-        {
-          title: "Analysis",
-          url: "/dashboard/analysis",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Schedule exam",
-      url: "#",
-      renderSide: false,
-      icon: CalendarCheck,
-    },
-    {
-      name: "Access Points",
-      url: "#",
-      renderSide: true,
-      icon: Coins,
-    },
-    {
-      name: "Payments",
-      url: "#",
-      renderSide: false,
-      icon: CreditCard,
-    },
-  ],
-};
+
 
 export function AppSidebar({ session }: { session: Session | null }) {
   const pathname = usePathname(); // Get current route
@@ -242,6 +112,27 @@ export function AppSidebar({ session }: { session: Session | null }) {
       ],
     },
   ];
+
+  const projects =[
+    {
+      name: "Schedule exam",
+      url: "#",
+      renderSide: false,
+      icon: CalendarCheck,
+    },
+    {
+      name: "Access Points",
+      url: "#",
+      renderSide: true,
+      icon: Coins,
+    },
+    {
+      name: "Payments",
+      url: "#",
+      renderSide: false,
+      icon: CreditCard,
+    },
+  ]
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -249,7 +140,7 @@ export function AppSidebar({ session }: { session: Session | null }) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={session?.user} />
