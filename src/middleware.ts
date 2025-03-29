@@ -16,5 +16,5 @@ export function middleware(req: NextRequest) {
 
 
 export const config = {
-  matcher: ["/dashboard","/dashboard/bookmarks"], // Apply middleware only to /dashboard
+  matcher: ["/dashboard","/dashboard/bookmarks"],
 };

@@ -125,8 +125,8 @@ export default async function Page(props: {
     return (
       <div className="h-screen w-full">
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
-          <BookCheck className="text-chart-success/70" size={80} />
-          <p className="text-xl font-semibold">Exam already completed</p>
+          <BookCheck className="text-chart-success/90" size={80} />
+          <p className="text-xl font-semibold text-chart-success">Exam already completed</p>
           <p className="text-center w-[70%] lg:w-full text-sm lg:text-base">
             You have already completed this exam. Review your results or contact
             support if needed. find result at{" "}

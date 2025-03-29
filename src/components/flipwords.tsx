@@ -27,10 +27,10 @@ export const FlipWords: React.FC<FlipWordsProps> = ({
   useEffect(() => {
     if (!isAnimating) {
       const timerId = setTimeout(() => {
-        setIsFirstRender(false); // Ensure subsequent animations run normally
+        setIsFirstRender(false);
         startAnimation();
       }, duration);
-      return () => clearTimeout(timerId); // Cleanup timeout
+      return () => clearTimeout(timerId);
     }
   }, [isAnimating, duration, startAnimation]);
 

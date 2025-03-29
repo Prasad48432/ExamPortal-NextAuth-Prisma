@@ -9,7 +9,7 @@ export default function useWarningCountdown(
 
   useEffect(() => {
     if (isFullScreen) {
-      setWarningSecondsLeft(0); // Reset timer when fullscreen is active
+      setWarningSecondsLeft(0);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -26,7 +26,7 @@ export default function useWarningCountdown(
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
           intervalRef.current = null;
-          if (onExpire) onExpire(); // Submit if time runs out
+          if (onExpire) onExpire();
           return 0;
         }
         return prev - 1;

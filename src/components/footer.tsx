@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 const Footer = () => {
   const pathname = usePathname();
 
-  // List of routes where you don't want the navbar
   const hideNavbarRoutes = ["/sign-in", "/linksent"];
   const shouldShowNavbar =
     !hideNavbarRoutes.includes(pathname) &&

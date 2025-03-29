@@ -20,7 +20,7 @@ import {
   DialogOverlay,
 } from "@/components/ui/dialog";
 import type { Exam, SavedExam } from "@prisma/client";
-import { startExam } from "@/lib/questionActions";
+import { startExam } from "@/lib/actions/questionActions";
 import { ToastError } from "@/components/toast";
 import { redirect } from "next/navigation";
 import { saveExam } from "@/lib/actions/examActions";

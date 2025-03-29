@@ -13,7 +13,7 @@ import type { Exam, SavedExam } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ChevronRight, Clock } from "lucide-react";
-import { startExam } from "@/lib/questionActions";
+import { startExam } from "@/lib/actions/questionActions";
 import { redirect } from "next/navigation";
 import { ToastError } from "@/components/toast";
 import {
