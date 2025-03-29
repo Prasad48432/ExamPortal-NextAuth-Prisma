@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { auth } from "@/lib/auth";
 import Navbar from "@/components/navbar";
 import { Toaster } from "sonner";
+import Footer from "@/components/footer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -75,6 +76,7 @@ const Layout = async ({ children }: LayoutProps) => {
           <Toaster richColors position="top-center" />
           <Navbar session={session} />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
