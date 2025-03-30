@@ -26,7 +26,7 @@ const HeroPage = () => {
                       <div className="relative w-fit max-w-xl flex justify-center">
                         <a
                           target="_self"
-                          className="announcement-link group/announcement relative flex flex-row items-center p-1 pr-3 text-sm w-auto gap-2 text-left rounded-full bg-opacity-20 border border-secondary-border hover:border-secondary-strongerborder shadow-md overflow-hidden focus-visible:outline-none focus-visible:ring-brand-600 focus-visible:ring-2 focus-visible:rounded-full"
+                          className="announcement-link group/announcement relative flex flex-row items-center p-1 pr-3 text-xs lg:text-sm w-auto gap-2 text-left rounded-full bg-opacity-20 border border-secondary-border hover:border-secondary-strongerborder shadow-md overflow-hidden focus-visible:outline-none focus-visible:ring-brand-600 focus-visible:ring-2 focus-visible:rounded-full"
                           href="/upgrade"
                         >
                           <div className="inline-flex items-center bg-opacity-10 bg-accent-bg text-accent-text border border-secondary-strongerborder group-hover/announcement:border-secondary-border px-3 rounded-full text-sm py-1 announcement-badge">
@@ -44,7 +44,7 @@ const HeroPage = () => {
                       </div>
                     </div>
                     <h1
-                      className={`bricolage text-foreground font-extrabold text-herosize lg:text-7xl tracking-tight select-none`}
+                      className={`bricolage text-foreground font-extrabold text-3xl lg:text-7xl tracking-tight select-none`}
                     >
                       <span className="block cursor-pointer text-lightprimary-text dark:text-primary-text lg:mb-2">
                         The only portal for
@@ -54,7 +54,7 @@ const HeroPage = () => {
                         exams
                       </span>
                     </h1>
-                    <p className="pt-2 text-lightprimary-text dark:text-primary-text/80 my-3 text-sx sm:mt-5 lg:mb-0 sm:text-base lg:text-lg">
+                    <p className="pt-2 text-lightprimary-text dark:text-primary-text/80 my-3 text-sm sm:mt-5 lg:mb-0 sm:text-base lg:text-lg">
                       Boost your web presence with Linkfolio. Share your
                       startups, showcase projects, organize links, expand your
                       network, get noticed by recruiters, and discover new

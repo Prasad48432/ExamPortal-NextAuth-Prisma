@@ -17,7 +17,7 @@ const Navbar = ({ session }: { session: any }) => {
 
   const pathname = usePathname();
 
-  const hideNavbarRoutes = ["/sign-in","/linksent"];
+  const hideNavbarRoutes = ["/sign-in", "/linksent"];
   const shouldShowNavbar =
     !hideNavbarRoutes.includes(pathname) &&
     !pathname.startsWith("/exams/") &&
@@ -119,6 +119,17 @@ const Navbar = ({ session }: { session: any }) => {
                   </Button>
                 </div>
               )}
+              <ThemeToggle />
+              {session && (
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage
+                    referrerPolicy="no-referrer"
+                    src={session.user?.image || ""}
+                    alt={session.user?.id}
+                  />
+                  <AvatarFallback className="rounded-lg">EX</AvatarFallback>
+                </Avatar>
+              )}
               <motion.div
                 className="block lg:hidden cursor-pointer text-lightprimary-text dark:text-primary-text"
                 onClick={() => {
@@ -134,15 +145,6 @@ const Navbar = ({ session }: { session: any }) => {
                   <Menu className="h-6 w-6" /> // Menu icon
                 )}
               </motion.div>
-              <ThemeToggle />
-              {session && <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  referrerPolicy="no-referrer"
-                  src={session.user?.image || ""}
-                  alt={session.user?.id}
-                />
-                <AvatarFallback className="rounded-lg">EX</AvatarFallback>
-              </Avatar>}
             </div>
           </div>
         </div>
