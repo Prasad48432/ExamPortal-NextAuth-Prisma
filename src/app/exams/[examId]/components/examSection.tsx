@@ -288,27 +288,27 @@ const ExamSection = ({
     );
   }
 
-  if (!isFullScreen && !submitting) {
-    return (
-      <div className="h-screen w-full">
-        <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
-          <Maximize size={80} />
-          <p className="text-2xl font-semibold">Full Screen !</p>
-          <p className="text-center w-[80%] lg:w-full text-sm lg:text-base">
-            This exam is only allowed to be written in full screen mode. please
-            enter full screen mode now{" "}
-          </p>
-          <Button
-            onClick={() => activateFullScreen(isFullScreen)}
-            variant={"secondary"}
-            className="h-8 px-3"
-          >
-            Enter Fullscreen
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // if (!isFullScreen && !submitting) {
+  //   return (
+  //     <div className="h-screen w-full">
+  //       <div className="flex flex-col items-center justify-center gap-4 max-w-xl h-full mx-auto text-foreground/70">
+  //         <Maximize size={80} />
+  //         <p className="text-2xl font-semibold">Full Screen !</p>
+  //         <p className="text-center w-[80%] lg:w-full text-sm lg:text-base">
+  //           This exam is only allowed to be written in full screen mode. please
+  //           enter full screen mode now{" "}
+  //         </p>
+  //         <Button
+  //           onClick={() => activateFullScreen(isFullScreen)}
+  //           variant={"secondary"}
+  //           className="h-8 px-3"
+  //         >
+  //           Enter Fullscreen
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen">
@@ -319,12 +319,12 @@ const ExamSection = ({
             <div className="flex items-center px-6 lg:px-0 flex-1 sm:items-stretch justify-between">
               <div className="flex items-center divide-x gap-2">
                 <div className="flex items-center justify-start">
-                  <p className="font-bold leading-tight">
+                  <p className="text-sm lg:text-base font-bold leading-tight">
                     Exam <br /> Portal
                   </p>
                 </div>
-                <div className="flex flex-col items-start justify-center pl-2">
-                  <p className="font-semibold text-sm text-foreground/90">
+                <div className="flex flex-col items-start justify-center pl-2 max-w-40 lg:w-auto truncate text-ellipsis">
+                  <p className="font-semibold text-xs lg:text-sm text-foreground/90">
                     {userEmail}
                   </p>
                   <p className="font-medium text-xs flex items-center justify-center text-foreground/80">
@@ -341,14 +341,14 @@ const ExamSection = ({
                 </div>
               </div>
               <div className="flex gap-10 items-center justify-end">
-                <div className="flex items-center text-sm font-medium text-foreground/80">
+                <div className="flex items-center text-xs lg:text-sm font-medium text-foreground/80">
                   <Clock className="h-4 w-4 mr-1" />
                   Time left:{" "}
                   {secondsLeft !== null
                     ? formatTime(secondsLeft)
                     : "Loading..."}
                 </div>
-                <div className="flex gap-2 items-center text-sm font-medium">
+                <div className="hidden lg:flex gap-2 items-center text-sm font-medium">
                   {isFullScreen && (
                     <Minimize
                       onClick={() => {
@@ -375,7 +375,7 @@ const ExamSection = ({
                   onClick={() => {
                     openModal();
                   }}
-                  className="h-8"
+                  className="h-8 hidden lg:block"
                 >
                   {submitting ? (
                     <>
@@ -593,11 +593,11 @@ const ExamSection = ({
             </div>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogOverlay className="bg-muted/40" />
-              <DialogContent className="gap-1">
+              <DialogContent className="gap-1 w-[calc(100vw-20px)] lg:w-auto rounded-lg">
                 <DialogHeader>
                   <DialogTitle>Confirm Submit</DialogTitle>
                 </DialogHeader>
-                <p className="text-sm mb-4">Review your info</p>
+                <p className="text-sm mb-4 text-center">Review your info</p>
                 <div className="border-l-4 border-yellow-400 py-2 px-4 mb-6">
                   <div className="flex">
                     <div className="flex-shrink-0">
@@ -629,7 +629,7 @@ const ExamSection = ({
                     </div>
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex flex-col lg:flex-row gap-2">
                   <Button
                     disabled={submitting}
                     className="h-8 px-3"
@@ -686,10 +686,10 @@ const ExamSection = ({
             <div className="flex items-center px-6 lg:px-0 flex-1 sm:items-stretch justify-between">
               <div className="flex items-center justify-center gap-3 relative">
                 {/* WiFi Icon */}
-                <WifiHigh color="green" className="relative z-10 mb-1.5" />
+                <WifiHigh color="green" className="relative z-10 mb-1.5 hidden lg:block" />
 
                 {/* Ping Animation */}
-                <div className="relative w-2 h-2 flex items-center justify-center">
+                <div className="relative w-2 h-2 flex items-center justify-center hidden lg:block">
                   <span className="absolute top-0 left-0 w-full h-full bg-green-600 dark:bg-green-500 rounded-full"></span>
                   <span className="absolute top-0 left-0 w-full h-full bg-green-600 dark:bg-green-500 rounded-full opacity-75 animate-ping"></span>
                 </div>
@@ -699,7 +699,7 @@ const ExamSection = ({
                 </p>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-3 relativ">
+            <div className="lg:flex items-center justify-center gap-3 relative hidden ">
               <p className="text-xs">Need help? Contact us:</p>
               <p className="text-xs flex items-center justify-center gap-1">
                 {" "}
