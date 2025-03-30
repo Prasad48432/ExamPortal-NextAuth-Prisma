@@ -185,21 +185,21 @@ const ExamsList = ({
       {selectedExam && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className="bg-muted/40" />
-          <DialogContent className="gap-1">
+          <DialogContent className="gap-1 w-[calc(100vw-20px)] lg:w-auto rounded-lg">
             <DialogHeader>
-              <DialogTitle>{selectedExam.title}</DialogTitle>
+              <DialogTitle className="text-sm lg:text-base">{selectedExam.title}</DialogTitle>
             </DialogHeader>
-            <p className="text-sm mb-4">{selectedExam.description}</p>
+            <p className="text-xs lg:text-sm mb-4 text-center">{selectedExam.description}</p>
             <div className="border-l-4 border-yellow-400 dark:border-yellow-800 py-2 px-4 mb-6">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <AlertCircle className="h-5 w-5 text-yellow-400 dark:text-yellow-600" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+                  <h3 className="text-xs lg:text-sm font-medium text-yellow-800 dark:text-yellow-400">
                     Important Instructions
                   </h3>
-                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-500">
+                  <div className="mt-2 text-xs lg:text-sm text-yellow-700 dark:text-yellow-500">
                     <ul className="list-disc pl-1 space-y-1">
                       <li>The exam will be conducted in full-screen mode</li>
                       <li>
@@ -219,7 +219,7 @@ const ExamsList = ({
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex flex-col lg:flex-row gap-2">
               <Button
                 className="h-8 px-3"
                 variant="secondary"
