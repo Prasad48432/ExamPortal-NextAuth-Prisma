@@ -689,7 +689,7 @@ const ExamSection = ({
                 <WifiHigh color="green" className="relative z-10 mb-1.5 hidden lg:block" />
 
                 {/* Ping Animation */}
-                <div className="relative w-2 h-2 flex items-center justify-center hidden lg:block">
+                <div className="relative w-2 h-2 lg:flex items-center justify-center hidden">
                   <span className="absolute top-0 left-0 w-full h-full bg-green-600 dark:bg-green-500 rounded-full"></span>
                   <span className="absolute top-0 left-0 w-full h-full bg-green-600 dark:bg-green-500 rounded-full opacity-75 animate-ping"></span>
                 </div>
