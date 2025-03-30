@@ -251,17 +251,17 @@ const ExamSection = ({
       <div className="max-w-lg w-full p-6">
         <div className="flex flex-col items-center gap-4 text-center">
           <LockKeyhole size={80} className="text-foreground/70" />
-          <h1 className="text-3xl font-bold text-foreground">Security Check</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Security Check</h1>
 
           <div className="text-foreground/80">
-            <p className="text-lg font-semibold">{examDetails.title}</p>
-            <p className="text-base">{examDetails.description}</p>
-            <p className="mt-2 text-base">
+            <p className="text-base lg:text-lg font-semibold">{examDetails.title}</p>
+            <p className="text-sm lg:text-base">{examDetails.description}</p>
+            <p className="mt-2 text-sm lg:text-base">
               Exam duration : <span className="font-semibold text-primary">{examDetails.duration} minutes</span>
             </p>
           </div>
 
-          <div className="mt-4 text-left w-full flex flex-col gap-3 items-center justify-center">
+          <div className="mt-4 text-sm lg:text-base text-left w-full flex flex-col gap-3 items-center justify-center">
             <div className="flex items-center gap-2 text-foreground/80">
               <CheckCircle size={20} className="text-chart-success" />
               <p>No tab switching or minimizing screen</p>
