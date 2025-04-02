@@ -27,10 +27,10 @@ const HeroPage = () => {
                         <a
                           target="_self"
                           className="announcement-link group/announcement relative flex flex-row items-center p-1 pr-3 text-xs lg:text-sm w-auto gap-2 text-left rounded-full bg-opacity-20 border border-secondary-border hover:border-secondary-strongerborder shadow-md overflow-hidden focus-visible:outline-none focus-visible:ring-brand-600 focus-visible:ring-2 focus-visible:rounded-full"
-                          href="/upgrade"
+                          href="/exams"
                         >
                           <div className="inline-flex items-center bg-opacity-10 bg-accent-bg text-accent-text border border-secondary-strongerborder group-hover/announcement:border-secondary-border px-3 rounded-full text-sm py-1 announcement-badge">
-                            50% off ends soon!
+                            50% off all exams!
                           </div>
                           <span className="text-lightprimary-text dark:text-primary-text announcement-text">
                             Avail now
@@ -69,16 +69,16 @@ const HeroPage = () => {
                       variant={"outline"}
                       className="relative justify-center cursor-pointer inline-flex items-center space-x-2 text-center font-regular ease-out duration-200 rounded-md outline-none transition-all outline-0 focus-visible:outline-4 focus-visible:outline-offset-1 border  text-xs md:text-sm px-4 md:px-5 py-1.5"
                     >
-                      <a href="/dashboard" className="truncate">
-                        Dashboard
+                      <a href="/exams" className="truncate">
+                        Exams
                       </a>
                     </Button>
                     <Button
                       variant={"outline"}
                       className="relative justify-center cursor-pointer inline-flex items-center space-x-2 text-center font-regular ease-out duration-200 rounded-md outline-none transition-all outline-0 focus-visible:outline-4 focus-visible:outline-offset-1 border  text-xs md:text-sm px-4 md:px-5 py-1.5"
                     >
-                      <a href="/analytics" className="truncate">
-                        Analytics
+                      <a href="/dashboard/results" className="truncate">
+                        Results
                       </a>
                     </Button>
                   </div>
