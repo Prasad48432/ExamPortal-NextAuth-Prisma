@@ -1,12 +1,29 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  Coins,
+  CreditCard,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = ({ session }: { session: any }) => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -22,6 +39,7 @@ const Navbar = ({ session }: { session: any }) => {
     !hideNavbarRoutes.includes(pathname) &&
     !pathname.startsWith("/exams/") &&
     !pathname.startsWith("/dashboard");
+
 
   if (!shouldShowNavbar) {
     return null;
@@ -121,14 +139,77 @@ const Navbar = ({ session }: { session: any }) => {
               )}
               <ThemeToggle />
               {session && (
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    referrerPolicy="no-referrer"
-                    src={session.user?.image || ""}
-                    alt={session.user?.id}
-                  />
-                  <AvatarFallback className="rounded-lg">EX</AvatarFallback>
-                </Avatar>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        referrerPolicy="no-referrer"
+                        src={session.user?.image || ""}
+                        alt={session.user?.id}
+                      />
+                      <AvatarFallback className="rounded-lg">EX</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                    side={"bottom"}
+                    align="end"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage
+                            referrerPolicy="no-referrer"
+                            src={session.user?.image || ""}
+                            alt={session.user?.id}
+                          />
+                          <AvatarFallback className="rounded-lg">
+                            CN
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold">
+                            {session.user?.name}
+                          </span>
+                          <span className="truncate text-xs">
+                            {session.user?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Coins />
+                        Access Points <span className="font-semibold">45</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <BadgeCheck />
+                        Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <CreditCard />
+                        Payments
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Bell />
+                        Notifications
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-chart-fail"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               <motion.div
                 className="block lg:hidden cursor-pointer text-lightprimary-text dark:text-primary-text"
@@ -140,9 +221,9 @@ const Navbar = ({ session }: { session: any }) => {
                 transition={{ duration: 1 }}
               >
                 {isNavbarOpen ? (
-                  <X className="h-6 w-6" /> // Cross icon
+                  <X className="h-6 w-6" />
                 ) : (
-                  <Menu className="h-6 w-6" /> // Menu icon
+                  <Menu className="h-6 w-6" />
                 )}
               </motion.div>
             </div>
