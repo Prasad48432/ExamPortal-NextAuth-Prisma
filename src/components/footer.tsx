@@ -15,43 +15,59 @@ const Footer = () => {
     return null;
   }
   return (
-    <footer className=" rounded-lg  m-4">
-      <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <a
-            href="/"
-            className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
-          >
-            <p className="text-lg font-bold text-primary">Exam Portal</p>
-          </a>
-          <ul className="flex flex-wrap items-center mb-6 text-sm font-medium sm:mb-0">
-            <li>
-              <a href="#" className="hover:underline me-4 md:me-6">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline me-4 md:me-6">
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline me-4 md:me-6">
-                Licensing
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Contact
-              </a>
-            </li>
-          </ul>
-        </div>
-        <hr className="my-6  sm:mx-auto  lg:my-8" />
-        <span className="block text-sm  sm:text-center ">
-          © 2025{" "}
-          <a href="/" className="hover:underline">
-            EXAM PORTAL™
+    <footer className="p-4 md:p-8 lg:p-10 ">
+      <div className="mx-auto max-w-screen-xl text-center">
+        <a
+          href="#"
+          className="flex justify-center items-center text-2xl font-bold text-primary"
+        >
+          EXAM PORTAL
+        </a>
+        <p className="my-6 ">
+          Open-source library of over 400+ web components and interactive
+          elements built for better web.
+        </p>
+        <ul className="flex flex-wrap justify-center items-center mb-6 ">
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6 ">
+              About
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              Premium
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6 ">
+              Campaigns
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              Blog
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              Affiliate Program
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              FAQs
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              Contact
+            </a>
+          </li>
+        </ul>
+        <span className="text-sm ">
+          © 2024-2025{" "}
+          <a href="#" className="hover:underline">
+            ExamPortal™
           </a>
           . All Rights Reserved.
         </span>
